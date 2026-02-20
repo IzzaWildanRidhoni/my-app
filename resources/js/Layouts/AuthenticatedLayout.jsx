@@ -43,7 +43,7 @@ function AppSidebar() {
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                         <Settings className="h-4 w-4" />
                     </div>
-                    <span className="font-semibold text-lg">My App</span>
+                    <span className="font-semibold text-lg">Lpq Admin</span>
                 </div>
             </SidebarHeader>
 
