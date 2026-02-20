@@ -26,7 +26,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::resource('users', UserController::class);  // full CRUD + show/create/edit pages
-        Route::resource('roles', RoleController::class)->except(['show', 'create', 'edit']);
+        Route::resource('roles', RoleController::class);
     });
 });
 
