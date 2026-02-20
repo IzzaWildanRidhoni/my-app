@@ -3,7 +3,6 @@ import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -22,10 +21,9 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
     Plus, MoreHorizontal, Pencil, Trash2, Eye, Search, X,
     ChevronUp, ChevronDown, ChevronsUpDown, ChevronLeft, ChevronRight,
-    ChevronsLeft, ChevronsRight, Users, UserCheck, UserX, GraduationCap, LogOut,
+    ChevronsLeft, ChevronsRight, Users, GraduationCap,
 } from 'lucide-react';
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 function useDebounce(value, delay = 400) {
     const [debounced, setDebounced] = useState(value);
     useEffect(() => {
@@ -55,28 +53,6 @@ function FlashMessage() {
     );
 }
 
-// ─── Status config ─────────────────────────────────────────────────────────────
-const STATUS_CONFIG = {
-    aktif:               { label: 'Aktif',               variant: 'default',     className: 'bg-green-100 text-green-800 border-green-200' },
-    nonaktif:            { label: 'Non Aktif',            variant: 'secondary',   className: 'bg-gray-100 text-gray-700 border-gray-200' },
-    lulus:               { label: 'Lulus',                variant: 'outline',     className: 'bg-blue-100 text-blue-800 border-blue-200' },
-    mengundurkan_diri:   { label: 'Mengundurkan Diri',    variant: 'destructive', className: 'bg-red-100 text-red-800 border-red-200' },
-};
-
-function StatusBadge({ status }) {
-    const cfg = STATUS_CONFIG[status] || { label: status, className: '' };
-    return <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${cfg.className}`}>{cfg.label}</span>;
-}
-
-function JKBadge({ jk }) {
-    return (
-        <span className={`inline-flex items-center rounded px-1.5 py-0.5 text-xs font-semibold ${jk === 'L' ? 'bg-sky-100 text-sky-700' : 'bg-pink-100 text-pink-700'}`}>
-            {jk === 'L' ? 'L' : 'P'}
-        </span>
-    );
-}
-
-// ─── Stat Card ─────────────────────────────────────────────────────────────────
 function StatCard({ icon: Icon, label, value, iconClass }) {
     return (
         <Card>
@@ -95,11 +71,16 @@ function StatCard({ icon: Icon, label, value, iconClass }) {
     );
 }
 
-// ─── Main ──────────────────────────────────────────────────────────────────────
-export default function PesertaIndex({ peserta, stats, kegiatans, filters }) {
-    const [search,       setSearch]       = useState(filters.search    || '');
-    const [statusFilter, setStatusFilter] = useState(filters.status    || '');
-    const [kegiatanFilter, setKegiatanFilter] = useState(filters.kegiatan || '');
+function JKBadge({ jk }) {
+    return (
+        <span className={`inline-flex items-center rounded px-1.5 py-0.5 text-xs font-semibold ${jk === 'L' ? 'bg-sky-100 text-sky-700' : 'bg-pink-100 text-pink-700'}`}>
+            {jk === 'L' ? 'L' : 'P'}
+        </span>
+    );
+}
+
+export default function PesertaIndex({ peserta, stats, filters }) {
+    const [search, setSearch]   = useState(filters.search || '');
     const [deleteTarget, setDeleteTarget] = useState(null);
     const deleteForm = useForm({});
     const debouncedSearch = useDebounce(search, 400);
@@ -111,21 +92,17 @@ export default function PesertaIndex({ peserta, stats, kegiatans, filters }) {
     const applyFilters = useCallback((overrides = {}) => {
         router.get(route('admin.peserta.index'), {
             search:    overrides.search    !== undefined ? overrides.search    : search,
-            status:    overrides.status    !== undefined ? overrides.status    : statusFilter,
-            kegiatan:  overrides.kegiatan  !== undefined ? overrides.kegiatan  : kegiatanFilter,
             sort:      overrides.sort      !== undefined ? overrides.sort      : sortField,
             direction: overrides.direction !== undefined ? overrides.direction : sortDirection,
             per_page:  overrides.per_page  !== undefined ? overrides.per_page  : perPage,
         }, { preserveState: true, replace: true });
-    }, [search, statusFilter, kegiatanFilter, sortField, sortDirection, perPage]);
+    }, [search, sortField, sortDirection, perPage]);
 
     useEffect(() => { applyFilters({ search: debouncedSearch }); }, [debouncedSearch]);
 
-    const handleStatus   = (val) => { const v = val === 'all' ? '' : val; setStatusFilter(v);   applyFilters({ status: v }); };
-    const handleKegiatan = (val) => { const v = val === 'all' ? '' : val; setKegiatanFilter(v); applyFilters({ kegiatan: v }); };
-    const handleSort     = (field) => { const d = sortField === field && sortDirection === 'asc' ? 'desc' : 'asc'; applyFilters({ sort: field, direction: d }); };
-    const handlePerPage  = (val) => applyFilters({ per_page: Number(val) });
-    const handleClear    = () => { setSearch(''); setStatusFilter(''); setKegiatanFilter(''); router.get(route('admin.peserta.index')); };
+    const handleSort    = (field) => { const d = sortField === field && sortDirection === 'asc' ? 'desc' : 'asc'; applyFilters({ sort: field, direction: d }); };
+    const handlePerPage = (val) => applyFilters({ per_page: Number(val) });
+    const handleClear   = () => { setSearch(''); router.get(route('admin.peserta.index')); };
 
     const confirmDelete = () => {
         if (!deleteTarget) return;
@@ -134,13 +111,15 @@ export default function PesertaIndex({ peserta, stats, kegiatans, filters }) {
         });
     };
 
-    const hasFilters = search || statusFilter || kegiatanFilter;
-
     const SortableHead = ({ field, children }) => (
         <TableHead className="cursor-pointer select-none whitespace-nowrap hover:bg-muted/50 transition-colors" onClick={() => handleSort(field)}>
             <div className="flex items-center">{children}<SortIcon field={field} sortField={sortField} sortDirection={sortDirection} /></div>
         </TableHead>
     );
+
+    const formatDate = (str) => str
+        ? new Date(str).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })
+        : '—';
 
     return (
         <AuthenticatedLayout header="Peserta Management">
@@ -150,13 +129,11 @@ export default function PesertaIndex({ peserta, stats, kegiatans, filters }) {
                 <FlashMessage />
 
                 {/* ── Stats ── */}
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-                    <StatCard icon={Users}      label="Total"              value={stats?.total}              iconClass="bg-slate-100 text-slate-600" />
-                    <StatCard icon={UserCheck}  label="Aktif"              value={stats?.aktif}              iconClass="bg-green-100 text-green-600" />
-                    <StatCard icon={UserX}      label="Non Aktif"          value={stats?.nonaktif}           iconClass="bg-gray-100 text-gray-500" />
-                    <StatCard icon={GraduationCap} label="Lulus"           value={stats?.lulus}              iconClass="bg-blue-100 text-blue-600" />
-                    <StatCard icon={LogOut}     label="Undur Diri"         value={stats?.mengundurkan_diri}  iconClass="bg-red-100 text-red-500" />
-                    <StatCard icon={Users}      label="Laki / Perempuan"   value={`${stats?.laki_laki ?? 0} / ${stats?.perempuan ?? 0}`} iconClass="bg-violet-100 text-violet-600" />
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    <StatCard icon={Users}        label="Total Peserta"    value={stats?.total}      iconClass="bg-slate-100 text-slate-600" />
+                    <StatCard icon={Users}        label="Laki-laki"        value={stats?.laki_laki}  iconClass="bg-sky-100 text-sky-600" />
+                    <StatCard icon={Users}        label="Perempuan"        value={stats?.perempuan}  iconClass="bg-pink-100 text-pink-600" />
+                    <StatCard icon={GraduationCap} label="Sarjana (S1–S3)" value={stats?.sarjana}   iconClass="bg-violet-100 text-violet-600" />
                 </div>
 
                 {/* ── Header ── */}
@@ -177,40 +154,20 @@ export default function PesertaIndex({ peserta, stats, kegiatans, filters }) {
                 <Card>
                     <CardHeader className="pb-4">
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                            {/* Search */}
                             <div className="relative w-full sm:max-w-xs">
                                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                <Input placeholder="Cari nama, NIK, email, telepon..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 pr-9" />
-                                {search && <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"><X className="h-4 w-4" /></button>}
-                            </div>
-
-                            <div className="flex flex-wrap items-center gap-2">
-                                {/* Status filter */}
-                                <Select value={statusFilter || 'all'} onValueChange={handleStatus}>
-                                    <SelectTrigger className="w-36 h-9"><SelectValue placeholder="Semua status" /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">Semua Status</SelectItem>
-                                        {Object.entries(STATUS_CONFIG).map(([val, cfg]) => (
-                                            <SelectItem key={val} value={val}>{cfg.label}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-
-                                {/* Kegiatan filter */}
-                                <Select value={kegiatanFilter || 'all'} onValueChange={handleKegiatan}>
-                                    <SelectTrigger className="w-44 h-9"><SelectValue placeholder="Semua kegiatan" /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">Semua Kegiatan</SelectItem>
-                                        {kegiatans.map((k) => <SelectItem key={k} value={k}>{k}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-
-                                {hasFilters && (
-                                    <Button variant="ghost" size="sm" onClick={handleClear} className="gap-1.5 h-9">
-                                        <X className="h-3.5 w-3.5" /> Reset
-                                    </Button>
+                                <Input placeholder="Cari nama, email, telepon..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 pr-9" />
+                                {search && (
+                                    <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                                        <X className="h-4 w-4" />
+                                    </button>
                                 )}
                             </div>
+                            {search && (
+                                <Button variant="ghost" size="sm" onClick={handleClear} className="gap-1.5 h-9">
+                                    <X className="h-3.5 w-3.5" /> Reset
+                                </Button>
+                            )}
                         </div>
                     </CardHeader>
 
@@ -222,21 +179,20 @@ export default function PesertaIndex({ peserta, stats, kegiatans, filters }) {
                                         <TableHead className="w-10 pl-6 text-center">#</TableHead>
                                         <TableHead className="w-8">JK</TableHead>
                                         <SortableHead field="nama">Nama</SortableHead>
-                                        <SortableHead field="nik">NIK</SortableHead>
-                                        <TableHead>Kegiatan</TableHead>
-                                        <SortableHead field="tanggal_daftar">Tgl Daftar</SortableHead>
-                                        <SortableHead field="status">Status</SortableHead>
+                                        <TableHead>Kontak</TableHead>
+                                        <TableHead>Pendidikan</TableHead>
+                                        <SortableHead field="tanggal_lahir">Tgl Lahir</SortableHead>
                                         <TableHead className="w-16 pr-6 text-right">Aksi</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {peserta.data.length === 0 ? (
                                         <TableRow>
-                                            <TableCell colSpan={8} className="h-44 text-center">
+                                            <TableCell colSpan={7} className="h-44 text-center">
                                                 <div className="flex flex-col items-center gap-2 text-muted-foreground">
                                                     <Users className="h-10 w-10 opacity-20" />
                                                     <p className="text-sm">Tidak ada peserta ditemukan</p>
-                                                    {hasFilters && <Button variant="link" size="sm" onClick={handleClear}>Reset filter</Button>}
+                                                    {search && <Button variant="link" size="sm" onClick={handleClear}>Reset filter</Button>}
                                                 </div>
                                             </TableCell>
                                         </TableRow>
@@ -253,20 +209,17 @@ export default function PesertaIndex({ peserta, stats, kegiatans, filters }) {
                                                             {p.nama.charAt(0).toUpperCase()}
                                                         </div>
                                                     )}
-                                                    <div>
-                                                        <p className="font-medium leading-none">{p.nama}</p>
-                                                        <p className="text-xs text-muted-foreground mt-0.5">{p.email || p.no_telepon || '—'}</p>
-                                                    </div>
+                                                    <p className="font-medium leading-none">{p.nama}</p>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="font-mono text-sm">{p.nik}</TableCell>
-                                            <TableCell className="max-w-[160px]">
-                                                <p className="truncate text-sm">{p.nama_kegiatan}</p>
+                                            <TableCell className="text-sm text-muted-foreground">
+                                                <div>{p.email || '—'}</div>
+                                                {p.no_telepon && <div className="text-xs">{p.no_telepon}</div>}
                                             </TableCell>
+                                            <TableCell className="text-sm">{p.pendidikan_terakhir}</TableCell>
                                             <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                                                {new Date(p.tanggal_daftar).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                {formatDate(p.tanggal_lahir)}
                                             </TableCell>
-                                            <TableCell><StatusBadge status={p.status} /></TableCell>
                                             <TableCell className="pr-6 text-right">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
@@ -294,14 +247,14 @@ export default function PesertaIndex({ peserta, stats, kegiatans, filters }) {
                             </Table>
                         </div>
 
-                        {/* ── Footer ── */}
+                        {/* ── Footer / Pagination ── */}
                         {peserta.total > 0 && (
                             <div className="flex flex-col items-center justify-between gap-4 border-t px-6 py-4 sm:flex-row">
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                     <span>Tampil</span>
                                     <Select value={String(perPage)} onValueChange={handlePerPage}>
                                         <SelectTrigger className="h-8 w-16"><SelectValue /></SelectTrigger>
-                                        <SelectContent>{[10,25,50,100].map(n => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}</SelectContent>
+                                        <SelectContent>{[10, 25, 50, 100].map(n => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}</SelectContent>
                                     </Select>
                                     <span>dari <strong>{peserta.total}</strong> peserta{peserta.from && ` (${peserta.from}–${peserta.to})`}</span>
                                 </div>

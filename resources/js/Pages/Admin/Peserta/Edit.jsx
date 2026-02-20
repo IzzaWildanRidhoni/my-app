@@ -6,25 +6,19 @@ import { Button } from '@/components/ui/button';
 
 export default function PesertaEdit({ peserta }) {
     const { data, setData, post, processing, errors } = useForm({
-        _method:              'PATCH', // method spoofing untuk file upload
-        nik:                  peserta.nik,
-        nama:                 peserta.nama,
-        tempat_lahir:         peserta.tempat_lahir,
-        tanggal_lahir:        peserta.tanggal_lahir?.split('T')[0] || peserta.tanggal_lahir || '',
-        jenis_kelamin:        peserta.jenis_kelamin,
-        alamat:               peserta.alamat,
-        no_telepon:           peserta.no_telepon || '',
-        email:                peserta.email || '',
-        pendidikan_terakhir:  peserta.pendidikan_terakhir || 'SMA',
-        pekerjaan:            peserta.pekerjaan || '',
-        nama_kegiatan:        peserta.nama_kegiatan,
-        tanggal_daftar:       peserta.tanggal_daftar?.split('T')[0] || peserta.tanggal_daftar || '',
-        status:               peserta.status,
-        foto:                 null, // null = tidak mengganti foto
-        catatan:              peserta.catatan || '',
+        _method:             'PATCH',
+        nama:                peserta.nama,
+        tempat_lahir:        peserta.tempat_lahir,
+        tanggal_lahir:       peserta.tanggal_lahir?.split('T')[0] || peserta.tanggal_lahir || '',
+        jenis_kelamin:       peserta.jenis_kelamin,
+        alamat:              peserta.alamat,
+        no_telepon:          peserta.no_telepon || '',
+        email:               peserta.email || '',
+        pendidikan_terakhir: peserta.pendidikan_terakhir || 'SMA',
+        pekerjaan:           peserta.pekerjaan || '',
+        foto:                null,
     });
 
-    // Gunakan POST dengan _method PATCH karena multipart tidak support PATCH langsung
     const submit = (e) => {
         e.preventDefault();
         post(route('admin.peserta.update', peserta.id), {
@@ -37,7 +31,6 @@ export default function PesertaEdit({ peserta }) {
             <Head title={`Edit - ${peserta.nama}`} />
 
             <div className="space-y-4">
-                {/* Breadcrumb */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Link href={route('admin.peserta.index')} className="flex items-center gap-1 hover:text-foreground transition-colors">

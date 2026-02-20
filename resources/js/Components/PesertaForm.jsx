@@ -1,6 +1,4 @@
 // resources/js/Components/PesertaForm.jsx
-// Komponen form yang dipakai bersama oleh Create dan Edit
-
 import { useRef } from 'react';
 import { Link } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
@@ -11,16 +9,9 @@ import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { User, MapPin, BookOpen, Briefcase, Camera } from 'lucide-react';
+import { User, MapPin, Camera } from 'lucide-react';
 
 const PENDIDIKAN_OPTIONS = ['SD', 'SMP', 'SMA', 'D1', 'D2', 'D3', 'D4', 'S1', 'S2', 'S3'];
-const STATUS_OPTIONS = [
-    { value: 'aktif',             label: 'Aktif' },
-    { value: 'nonaktif',          label: 'Non Aktif' },
-    { value: 'lulus',             label: 'Lulus' },
-    { value: 'mengundurkan_diri', label: 'Mengundurkan Diri' },
-];
 
 function FormField({ label, error, required, children, hint }) {
     return (
@@ -65,14 +56,11 @@ export default function PesertaForm({ data, setData, errors, processing, onSubmi
                         <CardContent className="pt-6">
                             <SectionTitle icon={User} title="Identitas Diri" />
                             <div className="grid gap-4 sm:grid-cols-2">
-                                <FormField label="NIK" error={errors.nik} required hint="16 digit Nomor Induk Kependudukan">
-                                    <Input value={data.nik} onChange={(e) => setData('nik', e.target.value)}
-                                        placeholder="3301xxxxxxxxxx00" maxLength={16} className="font-mono" />
-                                </FormField>
-
-                                <FormField label="Nama Lengkap" error={errors.nama} required>
-                                    <Input value={data.nama} onChange={(e) => setData('nama', e.target.value)} placeholder="Nama sesuai KTP" />
-                                </FormField>
+                                <div className="sm:col-span-2">
+                                    <FormField label="Nama Lengkap" error={errors.nama} required>
+                                        <Input value={data.nama} onChange={(e) => setData('nama', e.target.value)} placeholder="Nama sesuai KTP" />
+                                    </FormField>
+                                </div>
 
                                 <FormField label="Tempat Lahir" error={errors.tempat_lahir} required>
                                     <Input value={data.tempat_lahir} onChange={(e) => setData('tempat_lahir', e.target.value)} placeholder="Kota tempat lahir" />
@@ -133,41 +121,6 @@ export default function PesertaForm({ data, setData, errors, processing, onSubmi
                         </CardContent>
                     </Card>
 
-                    {/* Kegiatan & Status */}
-                    <Card>
-                        <CardContent className="pt-6">
-                            <SectionTitle icon={BookOpen} title="Kegiatan & Status" />
-                            <div className="grid gap-4 sm:grid-cols-2">
-                                <div className="sm:col-span-2">
-                                    <FormField label="Nama Kegiatan" error={errors.nama_kegiatan} required>
-                                        <Input value={data.nama_kegiatan} onChange={(e) => setData('nama_kegiatan', e.target.value)}
-                                            placeholder="e.g. Pelatihan Web Development 2025" />
-                                    </FormField>
-                                </div>
-
-                                <FormField label="Tanggal Daftar" error={errors.tanggal_daftar} required>
-                                    <Input type="date" value={data.tanggal_daftar} onChange={(e) => setData('tanggal_daftar', e.target.value)} />
-                                </FormField>
-
-                                <FormField label="Status" error={errors.status} required>
-                                    <Select value={data.status} onValueChange={(v) => setData('status', v)}>
-                                        <SelectTrigger><SelectValue placeholder="Pilih status" /></SelectTrigger>
-                                        <SelectContent>
-                                            {STATUS_OPTIONS.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                </FormField>
-
-                                <div className="sm:col-span-2">
-                                    <FormField label="Catatan" error={errors.catatan}>
-                                        <Textarea value={data.catatan} onChange={(e) => setData('catatan', e.target.value)}
-                                            placeholder="Catatan tambahan (opsional)" rows={2} />
-                                    </FormField>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
                     {/* Action Buttons */}
                     <div className="flex items-center gap-3 pb-6">
                         <Button type="submit" disabled={processing} className="min-w-32">
@@ -192,7 +145,6 @@ export default function PesertaForm({ data, setData, errors, processing, onSubmi
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            {/* Preview */}
                             <div className="mb-4 flex justify-center">
                                 <div className="relative">
                                     {(data.foto instanceof File) ? (
@@ -234,11 +186,9 @@ export default function PesertaForm({ data, setData, errors, processing, onSubmi
                         </CardContent>
                     </Card>
 
-                    {/* Tips */}
                     <Card className="border-dashed">
                         <CardContent className="pt-5 text-xs text-muted-foreground space-y-2">
-                            <p>• NIK harus 16 digit sesuai KTP</p>
-                            <p>• Email dan NIK harus unik di sistem</p>
+                            <p>• Email harus unik di sistem</p>
                             <p>• Kolom bertanda <span className="text-destructive">*</span> wajib diisi</p>
                         </CardContent>
                     </Card>

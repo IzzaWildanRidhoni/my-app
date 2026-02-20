@@ -3,17 +3,13 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Repositories\PesertaRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
      */
-    public function register(): void
-    {
-        $this->app->singleton(PesertaRepository::class);
-    }
+    public function register(): void {}
 
     /**
      * Bootstrap any application services.

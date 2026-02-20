@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::create('peserta', function (Blueprint $table) {
             $table->id();
-            $table->string('nik', 20)->unique()->comment('Nomor Induk Kependudukan');
             $table->string('nama', 100);
             $table->string('tempat_lahir', 50);
             $table->date('tanggal_lahir');
@@ -20,11 +19,7 @@ return new class extends Migration
             $table->string('email', 100)->nullable()->unique();
             $table->string('pendidikan_terakhir', 20)->default('SMA');
             $table->string('pekerjaan', 100)->nullable();
-            $table->string('nama_kegiatan', 150);
-            $table->date('tanggal_daftar');
-            $table->enum('status', ['aktif', 'nonaktif', 'lulus', 'mengundurkan_diri'])->default('aktif');
             $table->string('foto', 255)->nullable();
-            $table->text('catatan')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
