@@ -1,66 +1,246 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🗂️ Sistem Manajemen Peserta
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi web manajemen peserta berbasis **Laravel 11**, **React (Inertia.js)**, dan **shadcn/ui**. Mendukung autentikasi, manajemen role, dan CRUD peserta dengan raw SQL tanpa Eloquent ORM.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🛠️ Tech Stack
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+| Layer | Teknologi |
+|-------|-----------|
+| Backend | Laravel 11 |
+| Frontend | React 18 + Inertia.js |
+| UI Components | shadcn/ui + Tailwind CSS |
+| Auth | Laravel Breeze (Inertia stack) |
+| Role & Permission | Middleware custom `role:admin` |
+| Database | MySQL (raw SQL via `DB` facade) |
+| File Storage | Laravel Storage (public disk) |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 📋 Persyaratan Sistem
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- PHP >= 8.2
+- Composer >= 2.x
+- Node.js >= 18.x + npm
+- MySQL >= 8.0
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🚀 Instalasi
 
-## Laravel Sponsors
+### 1. Clone & install dependensi
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+git clone https://github.com/username/nama-repo.git
+cd nama-repo
 
-### Premium Partners
+composer install
+npm install
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### 2. Konfigurasi environment
 
-## Contributing
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Edit file `.env` dan sesuaikan koneksi database:
 
-## Code of Conduct
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=nama_database
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 3. Jalankan migrasi
 
-## Security Vulnerabilities
+```bash
+php artisan migrate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 4. Buat symlink storage
 
-## License
+```bash
+php artisan storage:link
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 5. Build aset frontend
+
+```bash
+# Development
+npm run dev
+
+# Production
+npm run build
+```
+
+### 6. Jalankan server
+
+```bash
+php artisan serve
+```
+
+Akses aplikasi di `http://localhost:8000`
+
+---
+
+## 🗄️ Struktur Database
+
+### Tabel `peserta`
+
+| Kolom | Tipe | Keterangan |
+|-------|------|------------|
+| `id` | bigint | Primary key |
+| `nama` | varchar(100) | Nama lengkap |
+| `tempat_lahir` | varchar(50) | Kota tempat lahir |
+| `tanggal_lahir` | date | Tanggal lahir |
+| `jenis_kelamin` | enum(L, P) | Jenis kelamin |
+| `alamat` | text | Alamat lengkap |
+| `no_telepon` | varchar(20) | Nomor telepon (opsional) |
+| `email` | varchar(100) | Email unik (opsional) |
+| `pendidikan_terakhir` | varchar(20) | SD–S3 |
+| `pekerjaan` | varchar(100) | Pekerjaan (opsional) |
+| `foto` | varchar(255) | Path foto di storage |
+| `created_at` | timestamp | — |
+| `updated_at` | timestamp | — |
+| `deleted_at` | timestamp | Soft delete |
+
+---
+
+## 🔀 Routing
+
+Semua route ada di `routes/web.php`.
+
+| Method | URI | Name | Keterangan |
+|--------|-----|------|------------|
+| GET | `/` | — | Halaman welcome |
+| GET | `/dashboard` | `dashboard` | Dashboard utama |
+| GET | `/profile` | `profile.edit` | Edit profil pengguna |
+| PATCH | `/profile` | `profile.update` | Update profil |
+| DELETE | `/profile` | `profile.destroy` | Hapus akun |
+| GET | `/admin/users` | `admin.users.index` | Daftar user |
+| GET | `/admin/roles` | `admin.roles.index` | Daftar role |
+| GET | `/admin/peserta` | `admin.peserta.index` | Daftar peserta |
+| GET | `/admin/peserta/create` | `admin.peserta.create` | Form tambah peserta |
+| POST | `/admin/peserta` | `admin.peserta.store` | Simpan peserta baru |
+| GET | `/admin/peserta/{id}` | `admin.peserta.show` | Detail peserta |
+| GET | `/admin/peserta/{id}/edit` | `admin.peserta.edit` | Form edit peserta |
+| PATCH | `/admin/peserta/{id}` | `admin.peserta.update` | Update data peserta |
+| DELETE | `/admin/peserta/{id}` | `admin.peserta.destroy` | Hapus peserta (soft delete) |
+
+> Semua route `/admin/*` dilindungi middleware `auth`, `verified`, dan `role:admin`.
+
+---
+
+## 📁 Struktur Proyek (Relevan)
+
+```
+app/
+├── Http/
+│   └── Controllers/
+│       ├── Admin/
+│       │   ├── PesertaController.php
+│       │   ├── UserController.php
+│       │   └── RoleController.php
+│       ├── DashboardController.php
+│       └── ProfileController.php
+└── Models/
+    └── Peserta.php          # Static methods + raw SQL
+
+database/
+└── migrations/
+    └── ..._create_peserta_table.php
+
+resources/
+└── js/
+    ├── Components/
+    │   └── PesertaForm.jsx  # Form shared (Create & Edit)
+    └── Pages/
+        └── Admin/
+            └── Peserta/
+                ├── Index.jsx
+                ├── Create.jsx
+                ├── Edit.jsx
+                └── Show.jsx
+
+routes/
+└── web.php
+```
+
+---
+
+## 🧩 Fitur
+
+### Manajemen Peserta
+- ✅ Tambah, lihat, edit, hapus peserta (soft delete)
+- ✅ Upload foto peserta (JPG/PNG/WEBP, maks. 2MB)
+- ✅ Pencarian real-time (nama, email, telepon)
+- ✅ Sorting kolom (nama, tanggal lahir, tanggal dibuat)
+- ✅ Pagination dengan pilihan jumlah data per halaman (10/25/50/100)
+- ✅ Statistik ringkasan (total, laki-laki, perempuan, sarjana)
+- ✅ Validasi email unik
+
+### Autentikasi & Otorisasi
+- ✅ Login, register, verifikasi email (Laravel Breeze)
+- ✅ Middleware role-based (`role:admin`)
+- ✅ Manajemen user dan role oleh admin
+
+---
+
+## 🎨 Komponen UI
+
+Proyek ini menggunakan [shadcn/ui](https://ui.shadcn.com/) dengan komponen antara lain:
+
+- `Button`, `Input`, `Textarea`, `Label`
+- `Select`, `Card`, `Badge`, `Separator`
+- `Table` (dengan sort & pagination)
+- `DropdownMenu` (aksi per baris)
+- `AlertDialog` (konfirmasi hapus)
+
+---
+
+## ⚙️ Konvensi Raw SQL
+
+Model `Peserta` menggunakan raw SQL via `DB` facade Laravel tanpa Eloquent. Semua operasi database dilakukan melalui static methods:
+
+```php
+Peserta::paginate($filters, $perPage, $page);
+Peserta::findById($id);
+Peserta::create($data);
+Peserta::update($id, $data);
+Peserta::softDelete($id);
+Peserta::isEmailExists($email, $excludeId);
+Peserta::getStats();
+```
+
+---
+
+## 📸 Upload Foto
+
+Foto peserta disimpan di `storage/app/public/peserta/foto/` dan diakses via URL `/storage/peserta/foto/namafile.jpg`. Pastikan symlink sudah dibuat:
+
+```bash
+php artisan storage:link
+```
+
+---
+
+## 👤 Default Admin
+
+Setelah registrasi, assign role admin secara manual di database atau buat seeder sendiri:
+
+```sql
+-- Contoh assign role admin ke user id 1
+INSERT INTO role_user (user_id, role_id) VALUES (1, 1);
+```
+
+---
+
+## 📄 Lisensi
+
+Proyek ini untuk keperluan internal. Tidak untuk didistribusikan.
