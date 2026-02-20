@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { LayoutDashboard, Users, Shield, LogOut, ChevronUp, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, Shield, LogOut, ChevronUp, Settings,ClipboardList  } from 'lucide-react';
 
 function AppSidebar() {
     const { auth } = usePage().props;
@@ -30,6 +30,12 @@ function AppSidebar() {
         menuItems.push({
             title: 'Administration',
             items: [
+                {
+                    title: 'Peserta',
+                    url: route('admin.peserta.index'),
+                    icon: ClipboardList,
+                    active: route().current('admin.peserta.*'),
+                },
                 { title: 'User Management', url: route('admin.users.index'), icon: Users, active: route().current('admin.users.*') },
                 { title: 'Roles & Permissions', url: route('admin.roles.index'), icon: Shield, active: route().current('admin.roles.*') },
             ],

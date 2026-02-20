@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\PesertaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\RoleController;
@@ -27,6 +28,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::resource('users', UserController::class);  // full CRUD + show/create/edit pages
         Route::resource('roles', RoleController::class);
+
+        Route::resource('peserta', PesertaController::class);
+        Route::patch('peserta/{peserta}/status', [PesertaController::class, 'updateStatus'])
+            ->name('peserta.status');
     });
 });
 
