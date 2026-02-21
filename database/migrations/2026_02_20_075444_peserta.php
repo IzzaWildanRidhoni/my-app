@@ -10,6 +10,11 @@ return new class extends Migration
     {
         Schema::create('peserta', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')
+                ->nullable()
+                ->unique()
+                ->constrained('users')
+                ->nullOnDelete();
             $table->string('nama', 100);
             $table->string('tempat_lahir', 50);
             $table->date('tanggal_lahir');

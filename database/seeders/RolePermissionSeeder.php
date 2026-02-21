@@ -14,40 +14,83 @@ class RolePermissionSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         $permissions = [
+            // Dashboard
             'view dashboard',
+
+            // Users
             'manage users',
             'create user',
             'edit user',
             'delete user',
+
+            // Roles & Permissions
             'manage roles',
             'create role',
             'edit role',
             'delete role',
             'manage permissions',
+
+            // Kelas
+            'view kelas',
+            'create kelas',
+            'edit kelas',
+            'delete kelas',
+
+            // Pendaftaran Kelas
+            'view pendaftaran',
+            'create pendaftaran',
+            'edit pendaftaran',
+            'delete pendaftaran',
+            'view own pendaftaran',    // user hanya lihat milik sendiri
+            'create own pendaftaran',  // user daftar sendiri
+
+            // Pembayaran Kelas
+            'view pembayaran',
+            'create pembayaran',
+            'delete pembayaran',
+            'verifikasi pembayaran',   // admin verifikasi bukti
+            'upload bukti pembayaran', // user upload bukti
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
-        $adminRole = Role::create(['name' => 'admin']);
-        $userRole  = Role::create(['name' => 'user']);
+        // ─── Roles ────────────────────────────────────────────────────────────
 
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $userRole  = Role::firstOrCreate(['name' => 'user']);
+
+        // Admin: semua permission
         $adminRole->givePermissionTo(Permission::all());
-        $userRole->givePermissionTo('view dashboard');
 
-        $admin = User::create([
-            'name'     => 'Admin',
-            'email'    => 'admin@example.com',
-            'password' => bcrypt('password'),
+        // User: permission terbatas (aksi milik sendiri)
+        $userRole->givePermissionTo([
+            'view dashboard',
+            'view kelas',
+            'view own pendaftaran',
+            'create own pendaftaran',
+            'upload bukti pembayaran',
         ]);
+
+        // ─── Users ────────────────────────────────────────────────────────────
+
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'name'     => 'Admin',
+                'password' => bcrypt('password'),
+            ]
+        );
         $admin->assignRole('admin');
 
-        $user = User::create([
-            'name'     => 'User',
-            'email'    => 'user@example.com',
-            'password' => bcrypt('password'),
-        ]);
+        $user = User::firstOrCreate(
+            ['email' => 'user@gmail.com'],
+            [
+                'name'     => 'User',
+                'password' => bcrypt('password'),
+            ]
+        );
         $user->assignRole('user');
     }
 }

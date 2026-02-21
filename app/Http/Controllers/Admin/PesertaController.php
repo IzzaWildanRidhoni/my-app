@@ -34,36 +34,81 @@ class PesertaController extends Controller
     {
         return Inertia::render('Admin/Peserta/Create');
     }
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'nama'                => 'required|string|max:100',
+        'tempat_lahir'        => 'required|string|max:50',
+        'tanggal_lahir'       => 'required|date',
+        'jenis_kelamin'       => 'required|in:L,P',
+        'alamat'              => 'required|string',
+        'no_telepon'          => 'nullable|string|max:20',
+        'email'               => 'nullable|email|max:100|unique:peserta,email',
+        'pendidikan_terakhir' => 'nullable|string|max:20',
+        'pekerjaan'           => 'nullable|string|max:100',
+        // foto dihandle terpisah
+    ]);
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'nama'                 => 'required|string|max:100',
-            'tempat_lahir'         => 'required|string|max:50',
-            'tanggal_lahir'        => 'required|date|before:today',
-            'jenis_kelamin'        => 'required|in:L,P',
-            'alamat'               => 'required|string',
-            'no_telepon'           => 'nullable|string|max:20',
-            'email'                => 'nullable|email|max:100',
-            'pendidikan_terakhir'  => 'required|in:SD,SMP,SMA,D1,D2,D3,D4,S1,S2,S3',
-            'pekerjaan'            => 'nullable|string|max:100',
-            'foto'                 => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
+    $userId = null;
 
-        if (!empty($validated['email']) && Peserta::isEmailExists($validated['email'])) {
-            return back()->withErrors(['email' => 'Email sudah terdaftar.']);
+    // Jika ada email, buat akun User sekaligus
+    if (!empty($validated['email'])) {
+        // Cek apakah user dengan email ini sudah ada
+        $existingUser = \Illuminate\Support\Facades\DB::select(
+            'SELECT id FROM users WHERE email = ? LIMIT 1',
+            [$validated['email']]
+        );
+
+        if ($existingUser) {
+            $userId = $existingUser[0]->id;
+        } else {
+            // Buat user baru dengan password default = nama (tanpa spasi, lowercase)
+            $defaultPassword = strtolower(str_replace(' ', '', $validated['nama'])) . '123';
+
+            $user = \App\Models\User::create([
+                'name'     => $validated['nama'],
+                'email'    => $validated['email'],
+                'password' => bcrypt($defaultPassword),
+            ]);
+            $user->assignRole('user');
+            $userId = $user->id;
         }
-
-        $validated['foto'] = null;
-        if ($request->hasFile('foto')) {
-            $validated['foto'] = $request->file('foto')->store('peserta/foto', 'public');
-        }
-
-        $id = Peserta::create($validated);
-
-        return redirect()->route('admin.peserta.show', $id)
-            ->with('success', "Peserta \"{$validated['nama']}\" berhasil ditambahkan.");
     }
+
+    // Handle foto jika ada
+    $foto = null;
+    if ($request->hasFile('foto')) {
+        $foto = $request->file('foto')->store('peserta/foto', 'public');
+    }
+
+    \Illuminate\Support\Facades\DB::insert("
+        INSERT INTO peserta
+            (user_id, nama, tempat_lahir, tanggal_lahir, jenis_kelamin,
+             alamat, no_telepon, email, pendidikan_terakhir, pekerjaan,
+             foto, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+    ", [
+        $userId,
+        $validated['nama'],
+        $validated['tempat_lahir'],
+        $validated['tanggal_lahir'],
+        $validated['jenis_kelamin'],
+        $validated['alamat'],
+        $validated['no_telepon']          ?? null,
+        $validated['email']               ?? null,
+        $validated['pendidikan_terakhir'] ?? 'SMA',
+        $validated['pekerjaan']           ?? null,
+        $foto,
+    ]);
+
+    $id = (int) \Illuminate\Support\Facades\DB::getPdo()->lastInsertId();
+
+    return redirect()->route('admin.peserta.show', $id)
+        ->with('success', "Peserta \"{$validated['nama']}\" berhasil ditambahkan." .
+            ($userId && empty($existingUser ?? null) ? " Akun user dibuat dengan password default." : ""));
+}
+
+
 
     // ─── SHOW ──────────────────────────────────────────────────────────────────
 
@@ -95,43 +140,73 @@ class PesertaController extends Controller
         ]);
     }
 
+    
     public function update(Request $request, int $id)
     {
-        $peserta = Peserta::findById($id);
-        if (!$peserta) {
-            abort(404, 'Peserta tidak ditemukan.');
-        }
+        $peserta = \Illuminate\Support\Facades\DB::select(
+            'SELECT * FROM peserta WHERE id = ? AND deleted_at IS NULL LIMIT 1',
+            [$id]
+        );
+        if (!$peserta) abort(404);
+        $peserta = $peserta[0];
 
         $validated = $request->validate([
-            'nama'                 => 'required|string|max:100',
-            'tempat_lahir'         => 'required|string|max:50',
-            'tanggal_lahir'        => 'required|date|before:today',
-            'jenis_kelamin'        => 'required|in:L,P',
-            'alamat'               => 'required|string',
-            'no_telepon'           => 'nullable|string|max:20',
-            'email'                => 'nullable|email|max:100',
-            'pendidikan_terakhir'  => 'required|in:SD,SMP,SMA,D1,D2,D3,D4,S1,S2,S3',
-            'pekerjaan'            => 'nullable|string|max:100',
-            'foto'                 => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'nama'                => 'required|string|max:100',
+            'tempat_lahir'        => 'required|string|max:50',
+            'tanggal_lahir'       => 'required|date',
+            'jenis_kelamin'       => 'required|in:L,P',
+            'alamat'              => 'required|string',
+            'no_telepon'          => 'nullable|string|max:20',
+            'email'               => 'nullable|email|max:100|unique:peserta,email,' . $id,
+            'pendidikan_terakhir' => 'nullable|string|max:20',
+            'pekerjaan'           => 'nullable|string|max:100',
         ]);
 
-        if (!empty($validated['email']) && Peserta::isEmailExists($validated['email'], $id)) {
-            return back()->withErrors(['email' => 'Email sudah digunakan peserta lain.']);
-        }
-
+        // Handle foto
+        $foto = $peserta->foto;
         if ($request->hasFile('foto')) {
-            if ($peserta->foto) {
-                Storage::disk('public')->delete($peserta->foto);
-            }
-            $validated['foto'] = $request->file('foto')->store('peserta/foto', 'public');
-        } else {
-            $validated['foto'] = $peserta->foto;
+            if ($foto) \Illuminate\Support\Facades\Storage::disk('public')->delete($foto);
+            $foto = $request->file('foto')->store('peserta/foto', 'public');
         }
 
-        Peserta::update($id, $validated);
+        // Sinkronisasi nama ke tabel users jika ada relasi
+        if ($peserta->user_id) {
+            \Illuminate\Support\Facades\DB::update(
+                'UPDATE users SET name = ?, updated_at = NOW() WHERE id = ?',
+                [$validated['nama'], $peserta->user_id]
+            );
+        }
+
+        \Illuminate\Support\Facades\DB::update("
+            UPDATE peserta SET
+                nama                = ?,
+                tempat_lahir        = ?,
+                tanggal_lahir       = ?,
+                jenis_kelamin       = ?,
+                alamat              = ?,
+                no_telepon          = ?,
+                email               = ?,
+                pendidikan_terakhir = ?,
+                pekerjaan           = ?,
+                foto                = ?,
+                updated_at          = NOW()
+            WHERE id = ?
+        ", [
+            $validated['nama'],
+            $validated['tempat_lahir'],
+            $validated['tanggal_lahir'],
+            $validated['jenis_kelamin'],
+            $validated['alamat'],
+            $validated['no_telepon']          ?? null,
+            $validated['email']               ?? null,
+            $validated['pendidikan_terakhir'] ?? 'SMA',
+            $validated['pekerjaan']           ?? null,
+            $foto,
+            $id,
+        ]);
 
         return redirect()->route('admin.peserta.show', $id)
-            ->with('success', "Data peserta \"{$validated['nama']}\" berhasil diperbarui.");
+            ->with('success', "Peserta \"{$validated['nama']}\" berhasil diperbarui.");
     }
 
     // ─── DELETE ────────────────────────────────────────────────────────────────

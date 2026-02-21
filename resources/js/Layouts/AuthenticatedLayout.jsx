@@ -10,11 +10,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { LayoutDashboard, Users, Shield, LogOut, ChevronUp, Settings,ClipboardList, BookOpen, Book, CreditCard } from 'lucide-react';
+import {
+    LayoutDashboard, Users, Shield, LogOut, ChevronUp, Settings,
+    ClipboardList, BookOpen, Book, CreditCard
+} from 'lucide-react';
 
 function AppSidebar() {
     const { auth } = usePage().props;
-    const user = auth.user;
+    const user    = auth.user;
     const isAdmin = user?.roles?.includes('admin');
 
     const menuItems = [
@@ -25,6 +28,25 @@ function AppSidebar() {
             ],
         },
     ];
+
+    // Menu untuk semua user yang login (role user)
+    menuItems.push({
+        title: 'Kelas',
+        items: [
+            {
+                title: 'Jadwal Kelas',
+                url: route('user.kelas.index'),
+                icon: BookOpen,
+                active: route().current('user.kelas.*'),
+            },
+            {
+                title: 'Pendaftaran Saya',
+                url: route('user.pendaftaran.index'),
+                icon: ClipboardList,
+                active: route().current('user.pendaftaran.*'),
+            },
+        ],
+    });
 
     if (isAdmin) {
         menuItems.push({

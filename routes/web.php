@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\KelasController;
 use App\Http\Controllers\Admin\PendaftaranKelasController;
 use App\Http\Controllers\Admin\PembayaranKelasController;
+use App\Http\Controllers\User\UserKelasController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -50,6 +51,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('pembayaran-kelas/{id}',      [PembayaranKelasController::class, 'destroy'])  ->name('pembayaran-kelas.destroy');
 
     });
+
+    
 });
 
+
+Route::middleware(['auth'])->prefix('kelas')->name('user.kelas.')->group(function () {
+    Route::get('/',          [UserKelasController::class, 'index'])->name('index');
+    Route::get('/{id}',      [UserKelasController::class, 'show'])->name('show');
+    Route::post('/{id}/daftar', [UserKelasController::class, 'daftar'])->name('daftar');
+});
+
+Route::middleware(['auth'])->prefix('pendaftaran-saya')->name('user.pendaftaran.')->group(function () {
+    Route::get('/',          [UserKelasController::class, 'pendaftaranSaya'])->name('index');
+    Route::get('/{id}',      [UserKelasController::class, 'showPendaftaran'])->name('show');
+    Route::post('/{id}/bayar', [UserKelasController::class, 'uploadBukti'])->name('bayar');
+});
 require __DIR__ . '/auth.php';
