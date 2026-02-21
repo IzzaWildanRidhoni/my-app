@@ -8,17 +8,18 @@ export default function KelasEdit() {
     const { kelas } = usePage().props;
 
     const { data, setData, patch, processing, errors } = useForm({
-        nama_kelas:       kelas?.nama_kelas       ?? '',
-        deskripsi:        kelas?.deskripsi        ?? '',
-        lokasi:           kelas?.lokasi           ?? '',
-        pengajar:         kelas?.pengajar         ?? '',
-        tipe:             kelas?.tipe             ?? 'event',
-        tanggal_mulai:    kelas?.tanggal_mulai    ?? '',
-        tanggal_selesai:  kelas?.tanggal_selesai  ?? '',
-        kuota:            kelas?.kuota            ?? '',
-        biaya:            kelas?.biaya            ?? 0,
-        perlu_pembayaran: !!kelas?.perlu_pembayaran,
-        status:           kelas?.status           ?? 'aktif',
+        nama_kelas:               kelas?.nama_kelas              ?? '',
+        deskripsi:                kelas?.deskripsi               ?? '',
+        deskripsi_setelah_lunas:  kelas?.deskripsi_setelah_lunas ?? '',
+        lokasi:                   kelas?.lokasi                  ?? '',
+        pengajar:                 kelas?.pengajar                ?? '',
+        tipe:                     kelas?.tipe                    ?? 'event',
+        tanggal_mulai:            kelas?.tanggal_mulai           ?? '',
+        tanggal_selesai:          kelas?.tanggal_selesai         ?? '',
+        kuota:                    kelas?.kuota                   ?? '',
+        biaya:                    kelas?.biaya                   ?? 0,
+        perlu_pembayaran:         !!kelas?.perlu_pembayaran,
+        status:                   kelas?.status                  ?? 'aktif',
     });
 
     if (!kelas) {
@@ -59,13 +60,9 @@ export default function KelasEdit() {
                     </Button>
                 </div>
                 <KelasForm
-                    data={data}
-                    setData={setData}
-                    errors={errors}
-                    processing={processing}
-                    onSubmit={submit}
-                    mode="edit"
-                    backRoute={route('admin.kelas.show', kelas.id)}
+                    data={data} setData={setData} errors={errors}
+                    processing={processing} onSubmit={submit}
+                    mode="edit" backRoute={route('admin.kelas.show', kelas.id)}
                 />
             </div>
         </AuthenticatedLayout>

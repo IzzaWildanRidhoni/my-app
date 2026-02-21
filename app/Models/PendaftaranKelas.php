@@ -86,23 +86,29 @@ class PendaftaranKelas
         );
     }
 
+   
+    
     public static function findById(int $id): ?object
     {
         $rows = DB::select("
             SELECT
                 pk.*,
-                p.nama          as peserta_nama,
-                p.email         as peserta_email,
-                p.no_telepon    as peserta_telepon,
-                p.foto          as peserta_foto,
-                p.jenis_kelamin as peserta_jk,
-                p.alamat        as peserta_alamat,
+                p.nama                    as peserta_nama,
+                p.email                   as peserta_email,
+                p.no_telepon              as peserta_telepon,
+                p.foto                    as peserta_foto,
+                p.jenis_kelamin           as peserta_jk,
+                p.alamat                  as peserta_alamat,
                 k.nama_kelas,
-                k.biaya         as kelas_biaya,
+                k.deskripsi               as kelas_deskripsi,
+                k.deskripsi_setelah_lunas as kelas_deskripsi_setelah_lunas,
+                k.biaya                   as kelas_biaya,
                 k.perlu_pembayaran,
-                k.tipe          as kelas_tipe,
-                k.lokasi        as kelas_lokasi,
-                k.pengajar      as kelas_pengajar
+                k.tipe                    as kelas_tipe,
+                k.lokasi                  as kelas_lokasi,
+                k.pengajar                as kelas_pengajar,
+                k.tanggal_mulai,
+                k.tanggal_selesai
             FROM pendaftaran_kelas pk
             JOIN peserta p ON p.id = pk.peserta_id
             JOIN kelas k   ON k.id = pk.kelas_id
@@ -111,6 +117,7 @@ class PendaftaranKelas
         ", [$id]);
         return $rows[0] ?? null;
     }
+
 
     public static function findByPesertaKelas(int $pesertaId, int $kelasId): ?object
     {

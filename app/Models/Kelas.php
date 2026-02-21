@@ -5,10 +5,6 @@ namespace App\Models;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-/**
- * Model Kelas
- * Semua query menggunakan raw SQL melalui DB facade.
- */
 class Kelas
 {
     protected static string $table = 'kelas';
@@ -33,16 +29,8 @@ class Kelas
             $params[] = "%{$search}%";
             $params[] = "%{$search}%";
         }
-
-        if ($status) {
-            $where[]  = 'k.status = ?';
-            $params[] = $status;
-        }
-
-        if ($tipe) {
-            $where[]  = 'k.tipe = ?';
-            $params[] = $tipe;
-        }
+        if ($status) { $where[] = 'k.status = ?'; $params[] = $status; }
+        if ($tipe)   { $where[] = 'k.tipe = ?';   $params[] = $tipe; }
 
         $whereSql = 'WHERE ' . implode(' AND ', $where);
 
@@ -112,22 +100,23 @@ class Kelas
     {
         DB::insert("
             INSERT INTO kelas
-                (nama_kelas, deskripsi, lokasi, pengajar, tipe,
+                (nama_kelas, deskripsi, deskripsi_setelah_lunas, lokasi, pengajar, tipe,
                  tanggal_mulai, tanggal_selesai, kuota, biaya,
                  perlu_pembayaran, status, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
         ", [
             $data['nama_kelas'],
-            $data['deskripsi']         ?? null,
-            $data['lokasi']            ?? null,
-            $data['pengajar']          ?? null,
-            $data['tipe']              ?? 'event',
-            $data['tanggal_mulai']     ?? null,
-            $data['tanggal_selesai']   ?? null,
-            $data['kuota']             ?? null,
-            $data['biaya']             ?? 0,
-            $data['perlu_pembayaran']  ?? true,
-            $data['status']            ?? 'aktif',
+            $data['deskripsi']                ?? null,
+            $data['deskripsi_setelah_lunas']  ?? null,
+            $data['lokasi']                   ?? null,
+            $data['pengajar']                 ?? null,
+            $data['tipe']                     ?? 'event',
+            $data['tanggal_mulai']            ?? null,
+            $data['tanggal_selesai']          ?? null,
+            $data['kuota']                    ?? null,
+            $data['biaya']                    ?? 0,
+            $data['perlu_pembayaran']         ?? true,
+            $data['status']                   ?? 'aktif',
         ]);
 
         return (int) DB::getPdo()->lastInsertId();
@@ -139,31 +128,33 @@ class Kelas
     {
         $affected = DB::update("
             UPDATE kelas SET
-                nama_kelas       = ?,
-                deskripsi        = ?,
-                lokasi           = ?,
-                pengajar         = ?,
-                tipe             = ?,
-                tanggal_mulai    = ?,
-                tanggal_selesai  = ?,
-                kuota            = ?,
-                biaya            = ?,
-                perlu_pembayaran = ?,
-                status           = ?,
-                updated_at       = NOW()
+                nama_kelas               = ?,
+                deskripsi                = ?,
+                deskripsi_setelah_lunas  = ?,
+                lokasi                   = ?,
+                pengajar                 = ?,
+                tipe                     = ?,
+                tanggal_mulai            = ?,
+                tanggal_selesai          = ?,
+                kuota                    = ?,
+                biaya                    = ?,
+                perlu_pembayaran         = ?,
+                status                   = ?,
+                updated_at               = NOW()
             WHERE id = ? AND deleted_at IS NULL
         ", [
             $data['nama_kelas'],
-            $data['deskripsi']         ?? null,
-            $data['lokasi']            ?? null,
-            $data['pengajar']          ?? null,
-            $data['tipe']              ?? 'event',
-            $data['tanggal_mulai']     ?? null,
-            $data['tanggal_selesai']   ?? null,
-            $data['kuota']             ?? null,
-            $data['biaya']             ?? 0,
-            $data['perlu_pembayaran']  ?? true,
-            $data['status']            ?? 'aktif',
+            $data['deskripsi']                ?? null,
+            $data['deskripsi_setelah_lunas']  ?? null,
+            $data['lokasi']                   ?? null,
+            $data['pengajar']                 ?? null,
+            $data['tipe']                     ?? 'event',
+            $data['tanggal_mulai']            ?? null,
+            $data['tanggal_selesai']          ?? null,
+            $data['kuota']                    ?? null,
+            $data['biaya']                    ?? 0,
+            $data['perlu_pembayaran']         ?? true,
+            $data['status']                   ?? 'aktif',
             $id,
         ]);
 

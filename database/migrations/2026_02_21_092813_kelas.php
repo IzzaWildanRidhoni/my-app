@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('nama_kelas', 150);
             $table->text('deskripsi')->nullable();
+            $table->text('deskripsi_setelah_lunas')->nullable()->comment('Ditampilkan kepada peserta setelah pembayaran dikonfirmasi lunas');
             $table->string('lokasi')->nullable();
             $table->string('pengajar')->nullable();
             $table->enum('tipe', ['event', 'rutin'])->default('event');

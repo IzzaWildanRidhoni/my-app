@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Link } from '@inertiajs/react';
-import { BookOpen, MapPin, User, Calendar, DollarSign, CreditCard } from 'lucide-react';
+import { BookOpen, MapPin, User, Calendar, DollarSign, CreditCard, Lock } from 'lucide-react';
 
 function FieldError({ message }) {
     if (!message) return null;
@@ -17,8 +17,11 @@ export default function KelasForm({ data, setData, errors, processing, onSubmit,
     return (
         <form onSubmit={onSubmit} className="space-y-5">
             <div className="grid gap-5 lg:grid-cols-3">
-                {/* LEFT - Main Info */}
+
+                {/* ── LEFT: Info Utama ── */}
                 <div className="lg:col-span-2 space-y-5">
+
+                    {/* Informasi Kelas */}
                     <Card>
                         <CardHeader className="pb-3">
                             <CardTitle className="flex items-center gap-2 text-base">
@@ -28,20 +31,41 @@ export default function KelasForm({ data, setData, errors, processing, onSubmit,
                         <CardContent className="space-y-4">
                             <div>
                                 <Label htmlFor="nama_kelas">Nama Kelas <span className="text-destructive">*</span></Label>
-                                <Input id="nama_kelas" value={data.nama_kelas} onChange={e => setData('nama_kelas', e.target.value)} placeholder="Contoh: Kelas Memasak Dasar" className="mt-1" />
+                                <Input
+                                    id="nama_kelas"
+                                    value={data.nama_kelas}
+                                    onChange={e => setData('nama_kelas', e.target.value)}
+                                    placeholder="Contoh: Kelas Tahsin Dasar"
+                                    className="mt-1"
+                                />
                                 <FieldError message={errors.nama_kelas} />
                             </div>
+
                             <div>
-                                <Label htmlFor="deskripsi">Deskripsi</Label>
-                                <Textarea id="deskripsi" value={data.deskripsi} onChange={e => setData('deskripsi', e.target.value)} placeholder="Deskripsi singkat kelas..." rows={3} className="mt-1" />
+                                <Label htmlFor="deskripsi">Deskripsi Kelas</Label>
+                                <Textarea
+                                    id="deskripsi"
+                                    value={data.deskripsi}
+                                    onChange={e => setData('deskripsi', e.target.value)}
+                                    placeholder="Deskripsi singkat kelas yang ditampilkan ke publik..."
+                                    rows={3}
+                                    className="mt-1"
+                                />
                                 <FieldError message={errors.deskripsi} />
                             </div>
+
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div>
                                     <Label htmlFor="lokasi">Lokasi</Label>
                                     <div className="relative mt-1">
                                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                        <Input id="lokasi" value={data.lokasi} onChange={e => setData('lokasi', e.target.value)} placeholder="Gedung A, Lantai 2" className="pl-9" />
+                                        <Input
+                                            id="lokasi"
+                                            value={data.lokasi}
+                                            onChange={e => setData('lokasi', e.target.value)}
+                                            placeholder="Gedung A, Lantai 2"
+                                            className="pl-9"
+                                        />
                                     </div>
                                     <FieldError message={errors.lokasi} />
                                 </div>
@@ -49,7 +73,13 @@ export default function KelasForm({ data, setData, errors, processing, onSubmit,
                                     <Label htmlFor="pengajar">Pengajar</Label>
                                     <div className="relative mt-1">
                                         <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                        <Input id="pengajar" value={data.pengajar} onChange={e => setData('pengajar', e.target.value)} placeholder="Nama pengajar..." className="pl-9" />
+                                        <Input
+                                            id="pengajar"
+                                            value={data.pengajar}
+                                            onChange={e => setData('pengajar', e.target.value)}
+                                            placeholder="Nama pengajar..."
+                                            className="pl-9"
+                                        />
                                     </div>
                                     <FieldError message={errors.pengajar} />
                                 </div>
@@ -57,6 +87,7 @@ export default function KelasForm({ data, setData, errors, processing, onSubmit,
                         </CardContent>
                     </Card>
 
+                    {/* Jadwal & Kuota */}
                     <Card>
                         <CardHeader className="pb-3">
                             <CardTitle className="flex items-center gap-2 text-base">
@@ -67,25 +98,76 @@ export default function KelasForm({ data, setData, errors, processing, onSubmit,
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div>
                                     <Label htmlFor="tanggal_mulai">Tanggal Mulai</Label>
-                                    <Input id="tanggal_mulai" type="date" value={data.tanggal_mulai} onChange={e => setData('tanggal_mulai', e.target.value)} className="mt-1" />
+                                    <Input
+                                        id="tanggal_mulai"
+                                        type="date"
+                                        value={data.tanggal_mulai}
+                                        onChange={e => setData('tanggal_mulai', e.target.value)}
+                                        className="mt-1"
+                                    />
                                     <FieldError message={errors.tanggal_mulai} />
                                 </div>
                                 <div>
                                     <Label htmlFor="tanggal_selesai">Tanggal Selesai</Label>
-                                    <Input id="tanggal_selesai" type="date" value={data.tanggal_selesai} onChange={e => setData('tanggal_selesai', e.target.value)} className="mt-1" />
+                                    <Input
+                                        id="tanggal_selesai"
+                                        type="date"
+                                        value={data.tanggal_selesai}
+                                        onChange={e => setData('tanggal_selesai', e.target.value)}
+                                        className="mt-1"
+                                    />
                                     <FieldError message={errors.tanggal_selesai} />
                                 </div>
                             </div>
                             <div>
-                                <Label htmlFor="kuota">Kuota Peserta <span className="text-muted-foreground text-xs">(kosongkan = tidak terbatas)</span></Label>
-                                <Input id="kuota" type="number" min="1" value={data.kuota} onChange={e => setData('kuota', e.target.value)} placeholder="Contoh: 30" className="mt-1" />
+                                <Label htmlFor="kuota">
+                                    Kuota Peserta{' '}
+                                    <span className="text-muted-foreground text-xs">(kosongkan = tidak terbatas)</span>
+                                </Label>
+                                <Input
+                                    id="kuota"
+                                    type="number"
+                                    min="1"
+                                    value={data.kuota}
+                                    onChange={e => setData('kuota', e.target.value)}
+                                    placeholder="Contoh: 30"
+                                    className="mt-1"
+                                />
                                 <FieldError message={errors.kuota} />
                             </div>
                         </CardContent>
                     </Card>
+
+                    {/* Deskripsi Setelah Lunas */}
+                    <Card className="border-green-200">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="flex items-center gap-2 text-base text-green-800">
+                                <Lock className="h-4 w-4" /> Informasi Setelah Pembayaran Lunas
+                            </CardTitle>
+                            <p className="text-xs text-muted-foreground mt-1">
+                                Konten ini hanya ditampilkan kepada peserta yang pembayarannya sudah dikonfirmasi.
+                                Bisa berisi link grup WhatsApp, Zoom, jadwal detail, dsb.
+                            </p>
+                        </CardHeader>
+                        <CardContent>
+                            <Label htmlFor="deskripsi_setelah_lunas">Informasi Khusus Peserta</Label>
+                            <Textarea
+                                id="deskripsi_setelah_lunas"
+                                value={data.deskripsi_setelah_lunas}
+                                onChange={e => setData('deskripsi_setelah_lunas', e.target.value)}
+                                placeholder={`Contoh:\nSelamat bergabung! Silakan join grup WhatsApp:\nhttps://chat.whatsapp.com/xxxxx\n\nAtau hubungi pengajar di:\nwa.me/6281234567890`}
+                                rows={5}
+                                className="mt-1 font-mono text-sm"
+                            />
+                            <p className="text-xs text-muted-foreground mt-1.5">
+                                URL yang diawali <code>https://</code> atau <code>wa.me/</code> akan otomatis jadi tombol klik.
+                            </p>
+                            <FieldError message={errors.deskripsi_setelah_lunas} />
+                        </CardContent>
+                    </Card>
                 </div>
 
-                {/* RIGHT - Settings */}
+                {/* ── RIGHT: Settings & Pembayaran ── */}
                 <div className="space-y-5">
                     <Card>
                         <CardHeader className="pb-3">
@@ -128,7 +210,15 @@ export default function KelasForm({ data, setData, errors, processing, onSubmit,
                                 <Label htmlFor="biaya">Biaya (Rp) <span className="text-destructive">*</span></Label>
                                 <div className="relative mt-1">
                                     <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                    <Input id="biaya" type="number" min="0" value={data.biaya} onChange={e => setData('biaya', e.target.value)} placeholder="0" className="pl-9" />
+                                    <Input
+                                        id="biaya"
+                                        type="number"
+                                        min="0"
+                                        value={data.biaya}
+                                        onChange={e => setData('biaya', e.target.value)}
+                                        placeholder="0"
+                                        className="pl-9"
+                                    />
                                 </div>
                                 <FieldError message={errors.biaya} />
                             </div>
@@ -147,7 +237,9 @@ export default function KelasForm({ data, setData, errors, processing, onSubmit,
 
                     <div className="flex flex-col gap-2">
                         <Button type="submit" disabled={processing} className="w-full">
-                            {processing ? 'Menyimpan...' : mode === 'create' ? 'Tambah Kelas' : 'Simpan Perubahan'}
+                            {processing
+                                ? 'Menyimpan...'
+                                : mode === 'create' ? 'Tambah Kelas' : 'Simpan Perubahan'}
                         </Button>
                         <Button variant="outline" asChild className="w-full">
                             <Link href={backRoute}>Batal</Link>

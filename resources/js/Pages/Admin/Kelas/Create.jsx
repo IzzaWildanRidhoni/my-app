@@ -5,17 +5,18 @@ import { ArrowLeft } from 'lucide-react';
 
 export default function KelasCreate() {
     const { data, setData, post, processing, errors } = useForm({
-        nama_kelas:       '',
-        deskripsi:        '',
-        lokasi:           '',
-        pengajar:         '',
-        tipe:             'event',
-        tanggal_mulai:    '',
-        tanggal_selesai:  '',
-        kuota:            '',
-        biaya:            0,
-        perlu_pembayaran: true,
-        status:           'aktif',
+        nama_kelas:               '',
+        deskripsi:                '',
+        deskripsi_setelah_lunas:  '',
+        lokasi:                   '',
+        pengajar:                 '',
+        tipe:                     'event',
+        tanggal_mulai:            '',
+        tanggal_selesai:          '',
+        kuota:                    '',
+        biaya:                    0,
+        perlu_pembayaran:         true,
+        status:                   'aktif',
     });
 
     const submit = (e) => {
@@ -35,13 +36,9 @@ export default function KelasCreate() {
                     <span className="text-foreground font-medium">Tambah Kelas</span>
                 </div>
                 <KelasForm
-                    data={data}
-                    setData={setData}
-                    errors={errors}
-                    processing={processing}
-                    onSubmit={submit}
-                    mode="create"
-                    backRoute={route('admin.kelas.index')}
+                    data={data} setData={setData} errors={errors}
+                    processing={processing} onSubmit={submit}
+                    mode="create" backRoute={route('admin.kelas.index')}
                 />
             </div>
         </AuthenticatedLayout>

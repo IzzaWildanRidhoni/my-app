@@ -1,183 +1,245 @@
-import { useState } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import {
+    ArrowLeft, Pencil, Trash2, BookOpen, MapPin, User,
+    Calendar, Users, CreditCard, Lock, ExternalLink, MessageCircle
+} from 'lucide-react';
+import { useState } from 'react';
+import { router, useForm } from '@inertiajs/react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Pencil, Trash2, BookOpen, MapPin, User, Calendar, DollarSign, Users, CreditCard, CheckCircle2, XCircle } from 'lucide-react';
 
-const formatRupiah = (n) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n ?? 0);
-const formatDate   = (s) => s ? new Date(s).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '—';
+const formatRupiah = (n) =>
+    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n ?? 0);
 
-function DetailRow({ icon: Icon, label, value }) {
+const formatDate = (s) =>
+    s ? new Date(s).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '—';
+
+function InfoRow({ icon: Icon, label, value }) {
+    if (!value && value !== 0) return null;
     return (
-        <div className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted mt-0.5">
-                <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+        <div className="flex items-start gap-3 py-2">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted">
+                <Icon className="h-4 w-4 text-muted-foreground" />
             </div>
-            <div className="min-w-0 flex-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-0.5">{label}</p>
-                <p className="text-sm font-medium">{value || <span className="text-muted-foreground italic">—</span>}</p>
+            <div className="min-w-0">
+                <p className="text-xs text-muted-foreground">{label}</p>
+                <p className="text-sm font-medium">{value}</p>
             </div>
         </div>
     );
 }
 
-export default function KelasShow({ kelas }) {
-    const [deleteOpen, setDeleteOpen] = useState(false);
+// Render deskripsi setelah lunas dengan deteksi link otomatis
+function DeskripsiLunas({ text }) {
+    if (!text) return null;
+    const urlRegex = /(https?:\/\/[^\s]+|wa\.me\/[^\s]+)/g;
+    const parts    = text.split(urlRegex);
+
+    return (
+        <div className="space-y-2">
+            {parts.map((part, i) => {
+                const isUrl = /^(https?:\/\/|wa\.me\/)/.test(part);
+                if (isUrl) {
+                    const isWa  = part.includes('wa.me');
+                    const href  = part.startsWith('http') ? part : `https://${part}`;
+                    return (
+                        <a key={i} href={href} target="_blank" rel="noreferrer"
+                            className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                                isWa ? 'bg-green-600 text-white hover:bg-green-700'
+                                     : 'bg-blue-600 text-white hover:bg-blue-700'
+                            }`}>
+                            {isWa ? <MessageCircle className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" />}
+                            {isWa ? 'WhatsApp' : part}
+                        </a>
+                    );
+                }
+                return part ? (
+                    <p key={i} className="text-sm text-muted-foreground whitespace-pre-line">{part}</p>
+                ) : null;
+            })}
+        </div>
+    );
+}
+
+export default function KelasShow() {
+    const { kelas, flash } = usePage().props;
+    const [showDelete, setShowDelete] = useState(false);
     const deleteForm = useForm({});
 
-    const handleDelete = () => {
+    const confirmDelete = () => {
         deleteForm.delete(route('admin.kelas.destroy', kelas.id), {
-            onSuccess: () => setDeleteOpen(false),
+            onSuccess: () => setShowDelete(false),
         });
     };
 
-    const isKuotaPenuh = kelas.kuota && kelas.jumlah_peserta >= kelas.kuota;
+    const penuh = kelas.kuota !== null && kelas.jumlah_peserta >= kelas.kuota;
 
     return (
         <AuthenticatedLayout header="Detail Kelas">
-            <Head title={`Kelas - ${kelas.nama_kelas}`} />
+            <Head title={kelas.nama_kelas} />
 
-            <div className="space-y-4">
-                {/* Breadcrumb */}
-                <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="space-y-5 max-w-4xl mx-auto">
+                {flash?.success && (
+                    <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+                        {flash.success}
+                    </div>
+                )}
+
+                {/* Breadcrumb + Actions */}
+                <div className="flex items-center justify-between gap-3 flex-wrap">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Link href={route('admin.kelas.index')} className="flex items-center gap-1 hover:text-foreground transition-colors">
+                        <Link href={route('admin.kelas.index')} className="flex items-center gap-1 hover:text-foreground">
                             <ArrowLeft className="h-3.5 w-3.5" /> Daftar Kelas
                         </Link>
                         <span>/</span>
-                        <span className="text-foreground font-medium">{kelas.nama_kelas}</span>
+                        <span className="text-foreground font-medium truncate max-w-[200px]">{kelas.nama_kelas}</span>
                     </div>
-                    <div className="flex gap-2">
-                        <Button size="sm" asChild>
-                            <Link href={route('admin.kelas.edit', kelas.id)}><Pencil className="mr-2 h-3.5 w-3.5" /> Edit</Link>
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" asChild>
+                            <Link href={route('admin.kelas.edit', kelas.id)}>
+                                <Pencil className="mr-2 h-3.5 w-3.5" /> Edit
+                            </Link>
                         </Button>
-                        <Button size="sm" variant="outline" className="text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground" onClick={() => setDeleteOpen(true)}>
+                        <Button variant="destructive" size="sm" onClick={() => setShowDelete(true)}>
                             <Trash2 className="mr-2 h-3.5 w-3.5" /> Hapus
                         </Button>
                     </div>
                 </div>
 
                 <div className="grid gap-5 lg:grid-cols-3">
-                    {/* LEFT */}
-                    <div className="space-y-4">
+                    {/* ── LEFT: Info Utama ── */}
+                    <div className="lg:col-span-2 space-y-5">
                         <Card>
-                            <CardContent className="pt-6">
-                                <div className="flex flex-col items-center text-center gap-3 mb-5">
-                                    <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10">
-                                        <BookOpen className="h-9 w-9 text-primary" />
-                                    </div>
+                            <CardHeader className="pb-2">
+                                <div className="flex items-start justify-between gap-3 flex-wrap">
                                     <div>
-                                        <h2 className="text-lg font-bold">{kelas.nama_kelas}</h2>
-                                        <div className="flex items-center justify-center gap-2 mt-1">
-                                            <Badge variant={kelas.tipe === 'event' ? 'default' : 'secondary'} className="capitalize">{kelas.tipe}</Badge>
-                                            <Badge variant="outline" className={kelas.status === 'aktif' ? 'border-green-300 text-green-700 bg-green-50' : ''}>{kelas.status}</Badge>
+                                        <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                            <Badge variant={kelas.tipe === 'event' ? 'default' : 'secondary'} className="capitalize">
+                                                {kelas.tipe}
+                                            </Badge>
+                                            <Badge variant={kelas.status === 'aktif' ? 'outline' : 'secondary'}
+                                                className={kelas.status === 'aktif' ? 'border-green-300 text-green-700 bg-green-50' : ''}>
+                                                {kelas.status}
+                                            </Badge>
+                                            {penuh && <Badge variant="destructive">Penuh</Badge>}
                                         </div>
+                                        <CardTitle className="text-xl">{kelas.nama_kelas}</CardTitle>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-2xl font-bold">
+                                            {kelas.biaya > 0 ? formatRupiah(kelas.biaya) : (
+                                                <span className="text-green-600">Gratis</span>
+                                            )}
+                                        </p>
+                                        {kelas.kuota && (
+                                            <p className={`text-xs mt-0.5 ${penuh ? 'text-red-500 font-semibold' : 'text-muted-foreground'}`}>
+                                                {kelas.jumlah_peserta} / {kelas.kuota} peserta
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
-
-                                <Separator className="mb-4" />
-
-                                <div className="space-y-3 text-sm">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-muted-foreground flex items-center gap-1.5"><Users className="h-3.5 w-3.5" /> Peserta</span>
-                                        <span className={`font-semibold ${isKuotaPenuh ? 'text-red-600' : ''}`}>
-                                            {kelas.jumlah_peserta ?? 0}{kelas.kuota ? ` / ${kelas.kuota}` : ''}
-                                            {isKuotaPenuh && <span className="ml-1 text-xs">(Penuh)</span>}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-muted-foreground flex items-center gap-1.5"><DollarSign className="h-3.5 w-3.5" /> Biaya</span>
-                                        <span className="font-semibold">{kelas.biaya > 0 ? formatRupiah(kelas.biaya) : <span className="text-green-600">Gratis</span>}</span>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-muted-foreground flex items-center gap-1.5"><CreditCard className="h-3.5 w-3.5" /> Wajib Bayar</span>
-                                        {kelas.perlu_pembayaran
-                                            ? <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                            : <XCircle className="h-4 w-4 text-muted-foreground" />}
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Metadata</CardTitle>
                             </CardHeader>
-                            <CardContent className="text-xs space-y-3 text-muted-foreground divide-y">
-                                <div className="flex justify-between pb-3">
-                                    <span>ID</span>
-                                    <span className="font-mono bg-muted px-1.5 rounded text-foreground">#{kelas.id}</span>
-                                </div>
-                                <div className="flex justify-between py-3">
-                                    <span>Dibuat</span>
-                                    <span>{formatDate(kelas.created_at)}</span>
-                                </div>
-                                <div className="flex justify-between pt-3">
-                                    <span>Diperbarui</span>
-                                    <span>{formatDate(kelas.updated_at)}</span>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Button variant="outline" className="w-full" asChild>
-                            <Link href={route('admin.pendaftaran-kelas.index', { kelas_id: kelas.id })}>
-                                <Users className="mr-2 h-4 w-4" /> Lihat Pendaftaran
-                            </Link>
-                        </Button>
-                    </div>
-
-                    {/* RIGHT */}
-                    <div className="lg:col-span-2 space-y-4">
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="flex items-center gap-2 text-base">
-                                    <BookOpen className="h-4 w-4" /> Informasi Kelas
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="divide-y">
-                                <DetailRow icon={BookOpen} label="Nama Kelas"  value={kelas.nama_kelas} />
-                                <DetailRow icon={User}     label="Pengajar"    value={kelas.pengajar} />
-                                <DetailRow icon={MapPin}   label="Lokasi"      value={kelas.lokasi} />
+                            <CardContent className="space-y-4">
                                 {kelas.deskripsi && (
-                                    <div className="py-3">
-                                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">Deskripsi</p>
-                                        <p className="text-sm">{kelas.deskripsi}</p>
+                                    <>
+                                        <div>
+                                            <p className="text-xs font-medium text-muted-foreground mb-1 uppercase tracking-wide">
+                                                Deskripsi Publik
+                                            </p>
+                                            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                                                {kelas.deskripsi}
+                                            </p>
+                                        </div>
+                                        <Separator />
+                                    </>
+                                )}
+
+                                <div className="divide-y">
+                                    <InfoRow icon={User}     label="Pengajar"        value={kelas.pengajar} />
+                                    <InfoRow icon={MapPin}   label="Lokasi"          value={kelas.lokasi} />
+                                    <InfoRow icon={Calendar} label="Tanggal Mulai"   value={formatDate(kelas.tanggal_mulai)} />
+                                    <InfoRow icon={Calendar} label="Tanggal Selesai" value={formatDate(kelas.tanggal_selesai)} />
+                                    <InfoRow icon={Users}    label="Peserta / Kuota"
+                                        value={kelas.kuota
+                                            ? `${kelas.jumlah_peserta} / ${kelas.kuota}`
+                                            : `${kelas.jumlah_peserta} (tidak terbatas)`} />
+                                    <InfoRow icon={CreditCard} label="Biaya"
+                                        value={kelas.biaya > 0 ? formatRupiah(kelas.biaya) : 'Gratis'} />
+                                    <InfoRow icon={BookOpen} label="Wajib Pembayaran"
+                                        value={kelas.perlu_pembayaran ? 'Ya — peserta harus upload bukti' : 'Tidak'} />
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Deskripsi Setelah Lunas */}
+                        <Card className="border-green-200">
+                            <CardHeader className="pb-3">
+                                <CardTitle className="flex items-center gap-2 text-base text-green-800">
+                                    <Lock className="h-4 w-4" /> Informasi Setelah Pembayaran Lunas
+                                </CardTitle>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                    Hanya ditampilkan kepada peserta yang pembayarannya sudah dikonfirmasi.
+                                </p>
+                            </CardHeader>
+                            <CardContent>
+                                {kelas.deskripsi_setelah_lunas ? (
+                                    <div className="rounded-lg border bg-green-50/50 p-4">
+                                        <DeskripsiLunas text={kelas.deskripsi_setelah_lunas} />
+                                    </div>
+                                ) : (
+                                    <div className="rounded-lg border border-dashed p-4 text-center text-sm text-muted-foreground">
+                                        Belum diisi. Klik <strong>Edit</strong> untuk menambahkan informasi seperti link grup WA, Zoom, dll.
                                     </div>
                                 )}
                             </CardContent>
                         </Card>
+                    </div>
 
+                    {/* ── RIGHT: Sidebar Info ── */}
+                    <div className="space-y-4">
                         <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="flex items-center gap-2 text-base">
-                                    <Calendar className="h-4 w-4" /> Jadwal & Kuota
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="divide-y">
-                                <DetailRow icon={Calendar} label="Tanggal Mulai"   value={formatDate(kelas.tanggal_mulai)} />
-                                <DetailRow icon={Calendar} label="Tanggal Selesai" value={formatDate(kelas.tanggal_selesai)} />
-                                <DetailRow icon={Users}    label="Kuota"           value={kelas.kuota ? `${kelas.kuota} orang` : 'Tidak terbatas'} />
+                            <CardContent className="pt-5 space-y-3 text-sm">
+                                <div>
+                                    <p className="text-xs text-muted-foreground">Dibuat</p>
+                                    <p className="font-medium">{formatDate(kelas.created_at)}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-muted-foreground">Terakhir diubah</p>
+                                    <p className="font-medium">{formatDate(kelas.updated_at)}</p>
+                                </div>
+                                <Separator />
+                                <Button variant="outline" size="sm" className="w-full" asChild>
+                                    <Link href={route('admin.pendaftaran-kelas.index') + `?kelas_id=${kelas.id}`}>
+                                        <Users className="mr-2 h-4 w-4" /> Lihat Peserta
+                                    </Link>
+                                </Button>
                             </CardContent>
                         </Card>
                     </div>
                 </div>
             </div>
 
-            <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+            {/* Delete Dialog */}
+            <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Hapus Kelas</AlertDialogTitle>
                         <AlertDialogDescription>
                             Yakin ingin menghapus kelas <strong className="text-foreground">{kelas.nama_kelas}</strong>?
+                            Data yang dihapus tidak dapat dikembalikan.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Batal</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" disabled={deleteForm.processing}>
+                        <AlertDialogAction
+                            onClick={confirmDelete}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            disabled={deleteForm.processing}
+                        >
                             {deleteForm.processing ? 'Menghapus...' : 'Hapus'}
                         </AlertDialogAction>
                     </AlertDialogFooter>
