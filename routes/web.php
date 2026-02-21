@@ -4,6 +4,9 @@ use App\Http\Controllers\Admin\PesertaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\KelasController;
+use App\Http\Controllers\Admin\PendaftaranKelasController;
+use App\Http\Controllers\Admin\PembayaranKelasController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +35,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('peserta', PesertaController::class);
         Route::patch('peserta/{peserta}/status', [PesertaController::class, 'updateStatus'])
             ->name('peserta.status');
+
+        // ── KELAS ─────────────────────────────────────────────────────────────────
+        Route::resource('kelas', KelasController::class);
+
+        // ── PENDAFTARAN KELAS ─────────────────────────────────────────────────────
+        Route::resource('pendaftaran-kelas', PendaftaranKelasController::class);
+
+        // ── PEMBAYARAN KELAS ──────────────────────────────────────────────────────
+        Route::get('pembayaran-kelas',              [PembayaranKelasController::class, 'index'])    ->name('pembayaran-kelas.index');
+        Route::post('pembayaran-kelas',             [PembayaranKelasController::class, 'store'])    ->name('pembayaran-kelas.store');
+        Route::get('pembayaran-kelas/{id}',         [PembayaranKelasController::class, 'show'])     ->name('pembayaran-kelas.show');
+        Route::post('pembayaran-kelas/{id}/verifikasi', [PembayaranKelasController::class, 'verifikasi'])->name('pembayaran-kelas.verifikasi');
+        Route::delete('pembayaran-kelas/{id}',      [PembayaranKelasController::class, 'destroy'])  ->name('pembayaran-kelas.destroy');
+
     });
 });
 

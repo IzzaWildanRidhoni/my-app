@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { LayoutDashboard, Users, Shield, LogOut, ChevronUp, Settings,ClipboardList  } from 'lucide-react';
+import { LayoutDashboard, Users, Shield, LogOut, ChevronUp, Settings,ClipboardList, BookOpen, Book, CreditCard } from 'lucide-react';
 
 function AppSidebar() {
     const { auth } = usePage().props;
@@ -35,6 +35,24 @@ function AppSidebar() {
                     url: route('admin.peserta.index'),
                     icon: ClipboardList,
                     active: route().current('admin.peserta.*'),
+                },
+                {
+                    title: 'Kelas',
+                    url: route('admin.kelas.index'),
+                    icon: BookOpen,
+                    active: route().current('admin.kelas.*'),
+                },
+                {
+                    title: 'Pendaftaran Kelas',
+                    url: route('admin.pendaftaran-kelas.index'),
+                    icon: Book,
+                    active: route().current('admin.pendaftaran-kelas.*'),
+                },
+                {
+                    title: 'Pembayaran Kelas',
+                    url: route('admin.pembayaran-kelas.index'),
+                    icon: CreditCard,
+                    active: route().current('admin.pembayaran-kelas.*'),
                 },
                 { title: 'User Management', url: route('admin.users.index'), icon: Users, active: route().current('admin.users.*') },
                 { title: 'Roles & Permissions', url: route('admin.roles.index'), icon: Shield, active: route().current('admin.roles.*') },

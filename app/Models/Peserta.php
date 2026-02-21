@@ -174,4 +174,12 @@ class Peserta
     {
         return DB::delete('DELETE FROM peserta WHERE id = ?', [$id]) > 0;
     }
+
+    public static function all(): array
+    {
+        return DB::select(
+            "SELECT id, nama, email, no_telepon, jenis_kelamin, foto FROM peserta WHERE deleted_at IS NULL ORDER BY nama ASC"
+        );
+    }
+
 }
