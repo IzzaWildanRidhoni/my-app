@@ -96,7 +96,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 .hero-bdot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
 .hero h1{font-family:'Lora',serif;font-size:clamp(2.4rem,4.5vw,3.8rem);font-weight:700;line-height:1.15;color:var(--text);letter-spacing:-.02em;margin-bottom:12px}
 .hero h1 .accent{color:var(--green)}
-.hero-ar{font-family:'Amiri',serif;font-size:clamp(1rem,1.8vw,1.4rem);color:var(--gold);direction:rtl;margin-bottom:24px;opacity:.85;font-style:italic}
+.hero-ar{font-family:'Amiri',serif;font-size:clamp(1rem,1.8vw,1.4rem);color:var(--gold);direction:rtl;text-align:left;margin-bottom:24px;opacity:.85;font-style:italic}
 .hero-desc{font-size:16px;line-height:1.8;color:var(--text-muted);max-width:480px;margin-bottom:40px}
 .hero-acts{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 .btn-p{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;padding:14px 28px;border-radius:var(--r);font-weight:600;font-size:14px;text-decoration:none;box-shadow:0 4px 20px rgba(15,76,42,0.35);transition:transform .2s,box-shadow .2s}
@@ -198,7 +198,7 @@ section{padding:108px 5%}
 /* CTA CARD */
 .cta-card{background:var(--green);border-radius:var(--rxl);padding:48px 40px;position:sticky;top:90px;overflow:hidden}
 .cta-card::before{content:'';position:absolute;top:-80px;right:-80px;width:260px;height:260px;background:rgba(255,255,255,0.04);border-radius:50%}
-.cta-ar{font-family:'Amiri',serif;font-size:1.6rem;color:var(--gold-light);direction:rtl;margin-bottom:20px;opacity:.9;position:relative;z-index:1}
+.cta-ar{font-family:'Amiri',serif;font-size:1.6rem;color:var(--gold-light);direction:rtl;text-align:left;margin-bottom:20px;opacity:.9;position:relative;z-index:1}
 .cta-title{font-family:'Lora',serif;font-size:1.45rem;color:#fff;font-weight:700;margin-bottom:12px;line-height:1.35;position:relative;z-index:1}
 .cta-desc{font-size:14px;color:rgba(255,255,255,0.65);line-height:1.75;margin-bottom:28px;position:relative;z-index:1}
 .cta-checks{display:flex;flex-direction:column;gap:10px;margin-bottom:28px;position:relative;z-index:1}
@@ -299,6 +299,7 @@ footer{background:#071810;padding:72px 5% 36px;color:rgba(255,255,255,0.55)}
 /* RESPONSIVE */
 @media(max-width:1100px){
   .hero{grid-template-columns:1fr;text-align:center;gap:60px}
+  .hero-ar{text-align:center} 
   .hero-desc{margin-left:auto;margin-right:auto}
   .hero-acts{justify-content:center}
   .hero-vis{order:-1}
@@ -620,10 +621,10 @@ export default function Welcome({ auth }) {
                 </div>
                 <div className="pj-grid">
                     {[
-                        {i:'A',bg:'linear-gradient(135deg,#1e7545,#2ea060)',name:'Ust. Ahmad Fauzi',  role:'Kepala LPQ',           desc:'Hafizh 30 juz, lulusan Universitas Islam Madinah. 15 tahun mengajar tahfizh.',badges:['Hafizh 30 Juz','S1 Madinah']},
-                        {i:'H',bg:'linear-gradient(135deg,#92400e,#b35a00)',name:'Ust. Hasan Basri',  role:'Pengajar Tahsin',       desc:'Spesialis ilmu tajwid dan tahsin, bersanad ke Syaikh Mahmud Khalil Al-Hushari.',badges:['Bersanad','Spesialis Tajwid']},
-                        {i:'F',bg:'linear-gradient(135deg,#1e3a5f,#2a5a8c)',name:'Ustdzh. Fatimah',   role:'Pengajar Tahfizh Putri',desc:'Hafizhah 30 juz, lulusan Pesantren Tahfizh Putri Jogja. Spesialis halaqah putri.',badges:['Hafizhah 30 Juz','Putri']},
-                        {i:'R',bg:'linear-gradient(135deg,#581c87,#7c3aed)',name:'Ust. Rizki Amanah', role:'Pengajar Tilawah',      desc:'Juara MTQ Nasional, spesialis tilawah maqamat. Aktif sebagai qori di berbagai acara.',badges:['Juara MTQ','Qori Nasional']},
+                        {i:'A',bg:'linear-gradient(135deg,#1e7545,#2ea060)',name:'Ust. Alifian',  role:'Direktur LPQ',           desc:'Hafizh 30 juz, lulusan Universitas Islam Madinah. 15 tahun mengajar tahfizh.',badges:['Hafizh 30 Juz','S1 Madinah']},
+                        {i:'H',bg:'linear-gradient(135deg,#92400e,#b35a00)',name:'Ust. Subhan',  role:'Pengajar Tahsin',       desc:'Spesialis ilmu tajwid dan tahsin, bersanad ke Syaikh Mahmud Khalil Al-Hushari.',badges:['Bersanad','Spesialis Tajwid']},
+                        {i:'F',bg:'linear-gradient(135deg,#1e3a5f,#2a5a8c)',name:'Ustdzh. Faraz',   role:'Pengajar Tahfizh Putri',desc:'Hafizhah 30 juz, lulusan Pesantren Tahfizh Putri Jogja. Spesialis halaqah putri.',badges:['Hafizhah 30 Juz','Putri']},
+                        {i:'R',bg:'linear-gradient(135deg,#581c87,#7c3aed)',name:'Ust. Ardhan', role:'Pengajar Tilawah',      desc:'Juara MTQ Nasional, spesialis tilawah maqamat. Aktif sebagai qori di berbagai acara.',badges:['Juara MTQ','Qori Nasional']},
                     ].map(p=>(
                         <div key={p.name} className="pj-card reveal">
                             <div className="pj-top" style={{background:p.bg}}><div className="pj-av" style={{background:p.bg}}>{p.i}</div></div>
