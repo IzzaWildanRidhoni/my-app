@@ -375,11 +375,11 @@ function FaqItem({ q, a }) {
     );
 }
 
-/* Unsplash photos for about section */
+/* Unsplash photos for Al-Qur'an / Islamic section */
 const PHOTOS = {
-    a: 'https://images.unsplash.com/photo-1585036156171-384164a8c675?w=800&q=80',
-    b: 'https://images.unsplash.com/photo-1564121211835-e88c852648ab?w=600&q=80',
-    c: 'https://images.unsplash.com/photo-1610517220945-db4fb34498cc?w=500&q=80',
+    a: 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?w=800&q=80', // Mushaf Al-Qur'an terbuka
+    b: 'https://images.unsplash.com/photo-1542810634-71277d95dcbb?w=600&q=80', // Detail ornamen masjid/arsitektur
+    c: 'https://images.unsplash.com/photo-1542810634-71277d95dcbb?w=600&q=80', // Tasbih dan suasana tenang
 };
 
 const STEPS = [
@@ -485,7 +485,7 @@ export default function Welcome({ auth }) {
                     <div style={{position:'relative',maxWidth:'440px',margin:'0 auto'}}>
                         <div className="hfloat hf1">
                             <div className="hfi" style={{background:'#e8f5ed'}}><Users size={16} color="#1e7545"/></div>
-                            <span style={{color:'#0f4c2a',fontWeight:700}}>500+ Santri Aktif</span>
+                            <span style={{color:'#0f4c2a',fontWeight:700}}>500+ Peserta Aktif</span>
                         </div>
                         <div className="hfloat hf2">
                             <div className="hfi" style={{background:'#fdf3dc'}}><Award size={16} color="#b8840c"/></div>
@@ -494,7 +494,7 @@ export default function Welcome({ auth }) {
                         <div className="hcard">
                             <div className="hc-lbl">LPQ Masjid Syuhada • Yogyakarta</div>
                             <div className="hc-title">Generasi Qurani Berakhlak Mulia</div>
-                            <div className="hc-sub">Mendidik sejak 2005</div>
+                            <div className="hc-sub">Mendidik sejak 1952</div>
                             <div className="hc-div"/>
                             <div className="hc-ar">اِقْرَأْ بِاسْمِ رَبِّكَ الَّذِيْ خَلَقَ</div>
                             <div className="hc-tr">"Bacalah dengan nama Tuhanmu yang menciptakan…" — Al-Alaq: 1</div>
@@ -511,7 +511,7 @@ export default function Welcome({ auth }) {
             {/* STATS */}
             <div className="sbar">
                 <div className="sbar-in">
-                    {[[Users,'500+','Santri Aktif'],[GraduationCap,'20+','Pengajar Bersertifikat'],[BookMarked,'15+','Tahun Berdiri'],[Sparkles,'10+','Jenis Program']].map(([Icon,n,l])=>(
+                    {[[Users,'500+','Peserta Aktif'],[GraduationCap,'20+','Pengajar Bersertifikat'],[BookMarked,'15+','Tahun Berdiri'],[Sparkles,'10+','Jenis Program']].map(([Icon,n,l])=>(
                         <div key={l} className="si">
                             <div className="si-icon"><Icon size={18}/></div>
                             <span className="si-num">{n}</span>
@@ -526,14 +526,14 @@ export default function Welcome({ auth }) {
                 <div className="about-layout">
                     <div className="about-photos reveal">
                         <div className="aimg aimg-a"><img src={PHOTOS.a} alt="Kegiatan LPQ Masjid Syuhada"/></div>
-                        <div className="aimg aimg-b"><img src={PHOTOS.b} alt="Santri belajar Al-Quran"/></div>
+                        <div className="aimg aimg-b"><img src={PHOTOS.b} alt="Peserta belajar Al-Quran"/></div>
                         <div className="aimg aimg-c"><img src={PHOTOS.c} alt="Pengajaran Al-Quran"/></div>
-                        <div className="a-since"><Moon size={12}/> Sejak 2005</div>
+                        <div className="a-since"><Moon size={12}/> Sejak 1952</div>
                     </div>
                     <div className="about-right reveal">
                         <div className="sk">Tentang Kami</div>
                         <h2 className="sh">Menerangi Hati dengan<br/><span className="g">Cahaya Al-Quran</span></h2>
-                        <p className="sd">LPQ Masjid Syuhada adalah lembaga pendidikan Al-Quran yang bernaung di bawah Masjid Syuhada Yogyakarta. Kami hadir dengan misi mencetak generasi yang Qurani, berakhlak mulia, dan berkontribusi bagi umat sejak tahun 2005.</p>
+                        <p className="sd">LPQ Masjid Syuhada adalah lembaga pendidikan Al-Quran yang bernaung di bawah Masjid Syuhada Yogyakarta. Kami hadir dengan misi mencetak generasi yang Qurani, berakhlak mulia, dan berkontribusi bagi umat sejak tahun 1952.</p>
                         <div className="pillars">
                             {[[BookOpen,'Metode Teruji','Metode Iqro dan Tartil yang telah terbukti efektif selama puluhan tahun.'],[Shield,'Pengajar Bersanad','Semua pengajar memiliki sanad keilmuan yang jelas dan terpercaya.'],[Heart,'Lingkungan Islami','Belajar di lingkungan masjid yang kondusif dan penuh berkah.'],[Users,'Semua Usia','Program tersedia untuk anak-anak, remaja, hingga dewasa.']].map(([Icon,t,d])=>(
                                 <div key={t} className="pillar">
@@ -596,7 +596,7 @@ export default function Welcome({ auth }) {
                         <div className="cta-card">
                             <div className="cta-ar">وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا</div>
                             <div className="cta-title">Siap Memulai Perjalanan Qurani Anda?</div>
-                            <p className="cta-desc">Bergabunglah dengan ratusan santri yang telah merasakan manfaat belajar Al-Quran di LPQ Masjid Syuhada.</p>
+                            <p className="cta-desc">Bergabunglah dengan ratusan Peserta yang telah merasakan manfaat belajar Al-Quran di LPQ Masjid Syuhada.</p>
                             <div className="cta-checks">
                                 {['Gratis untuk program TPA & Kajian Fiqih','Subsidi tersedia bagi yang membutuhkan','Pengajar bersertifikat & bersanad'].map(t=>(
                                     <div key={t} className="cta-check"><CheckCircle size={14} color="var(--gold-light)" strokeWidth={2.5}/>{t}</div>
@@ -642,13 +642,13 @@ export default function Welcome({ auth }) {
             <section className="testi-sec">
                 <div className="testi-head reveal">
                     <div className="sk">Testimoni</div>
-                    <h2 className="sh">Apa Kata Santri & Wali</h2>
+                    <h2 className="sh">Apa Kata Peserta</h2>
                 </div>
                 <div className="testi-grid">
                     {[
                         {a:'B',name:'Bapak Rahmat Hidayat',role:'Peserta Tahsin 2023',  txt:'Alhamdulillah, setelah ikut program tahsin di sini bacaan Al-Quran saya jauh lebih baik. Pengajarnya sabar dan metodologis. Sangat direkomendasikan!'},
-                        {a:'I',name:'Ibu Siti Aminah',      role:'Wali Santri TPA',      txt:'Anak saya yang sebelumnya susah diajak belajar agama, sekarang semangat ke TPA. Dalam 6 bulan sudah bisa baca Iqro 4. Alhamdulillah.'},
-                        {a:'M',name:'Muhammad Rizal',       role:'Santri Tahfizh, 3 Juz',txt:"Program tahfizh di LPQ ini luar biasa. Dalam setahun berhasil menghafal 3 juz dengan muroja'ah yang terstruktur. Jazakumullahu khairan."},
+                        {a:'I',name:'Ibu Siti Aminah',      role:'Peserta TPA',      txt:'Anak saya yang sebelumnya susah diajak belajar agama, sekarang semangat ke TPA. Dalam 6 bulan sudah bisa baca Iqro 4. Alhamdulillah.'},
+                        {a:'M',name:'Muhammad Rizal',       role:'Peserta Tahfizh, 3 Juz',txt:"Program tahfizh di LPQ ini luar biasa. Dalam setahun berhasil menghafal 3 juz dengan muroja'ah yang terstruktur. Jazakumullahu khairan."},
                     ].map(t=>(
                         <div key={t.name} className="testi-card reveal">
                             <div className="testi-stars">{[...Array(5)].map((_,i)=><Star key={i} size={13} fill="#d4a435" color="#d4a435"/>)}</div>
@@ -674,7 +674,7 @@ export default function Welcome({ auth }) {
                         ['Berapa biaya pendaftaran program?','Biaya bervariasi tergantung program. TPA Anak dan Kajian Fiqih gratis. Program Tahsin dan Tahfizh mulai dari Rp150.000/bulan. Tersedia subsidi bagi yang membutuhkan.'],
                         ['Apakah ada program untuk dewasa pemula?','Tentu ada! Kami memiliki kelas khusus untuk dewasa pemula yang belajar dari dasar. Tidak perlu malu, banyak peserta dewasa memulai dari nol.'],
                         ['Bagaimana jadwal kegiatan belajar?','TPA anak sore hari Senin–Jumat. Kelas dewasa pagi/malam sesuai program. Detail jadwal diberikan setelah pendaftaran dikonfirmasi admin.'],
-                        ['Apakah bisa daftar di tengah bulan?','Bisa. Penerimaan santri baru dibuka setiap saat selama kuota masih tersedia. Biaya dihitung proporsional sesuai tanggal masuk.'],
+                        ['Apakah bisa daftar di tengah bulan?','Bisa. Penerimaan Peserta baru dibuka setiap saat selama kuota masih tersedia. Biaya dihitung proporsional sesuai tanggal masuk.'],
                         ['Apakah ada sertifikat setelah selesai program?','Ya, setiap peserta mendapat sertifikat resmi dari LPQ Masjid Syuhada. Program Tahfizh diberikan sertifikat per juz.'],
                         ['Bagaimana cara menghubungi panitia?','Via WhatsApp di nomor yang tertera di bagian lokasi, datang langsung ke sekretariat LPQ, atau DM Instagram @lpqsyuhada.'],
                     ].map(([q,a])=><FaqItem key={q} q={q} a={a}/>)}
@@ -715,7 +715,7 @@ export default function Welcome({ auth }) {
                             <div className="ft-emb">ق</div>
                             <div className="ft-name">LPQ Masjid Syuhada</div>
                         </div>
-                        <p className="ft-desc">Lembaga Pendidikan Quran yang bernaung di bawah Masjid Syuhada Yogyakarta. Mencetak generasi Qurani sejak 2005.</p>
+                        <p className="ft-desc">Lembaga Pendidikan Quran yang bernaung di bawah Masjid Syuhada Yogyakarta. Mencetak generasi Qurani sejak 1952.</p>
                         <div className="ft-socials">
                             {[[Instagram,'Instagram'],[Youtube,'YouTube'],[MessageCircle,'WhatsApp'],[Facebook,'Facebook']].map(([Icon,lbl])=>(
                                 <a key={lbl} href="#" className="ft-social" aria-label={lbl}><Icon size={15}/></a>
