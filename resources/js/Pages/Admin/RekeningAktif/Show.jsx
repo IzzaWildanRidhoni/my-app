@@ -11,7 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import {
     ArrowLeft, Calendar, MapPin, User, CreditCard, Upload, CheckCircle2,
     Clock, XCircle, AlertCircle, FileText, Eye, ExternalLink, MessageCircle,
-    BookOpen, PartyPopper, Lock
+    BookOpen, PartyPopper, Lock, Copy, Check, Landmark
 } from 'lucide-react';
 
 const formatRupiah = (n) =>
@@ -27,50 +27,66 @@ const statusBayarConfig = {
     ditolak:             { label: 'Pembayaran Ditolak',  icon: XCircle,      bg: 'bg-red-50 border-red-200 text-red-700' },
 };
 
+// ─── Komponen Copy Nomor Rekening ─────────────────────────────────────────────
 function CopyButton({ text }) {
     const [copied, setCopied] = useState(false);
+
     const handleCopy = () => {
         navigator.clipboard.writeText(text).then(() => {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         });
     };
+
     return (
-        <button onClick={handleCopy}
-            className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
-            {copied ? '✓ Disalin' : 'Salin'}
+        <button
+            onClick={handleCopy}
+            className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+        >
+            {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+            {copied ? 'Disalin!' : 'Salin'}
         </button>
     );
 }
 
+// ─── Informasi Rekening Tujuan Transfer ───────────────────────────────────────
 function InfoRekening({ rekening, biaya }) {
     if (!rekening || rekening.length === 0) return null;
+
     return (
         <Card className="border-blue-200 bg-blue-50/40">
             <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base text-blue-800">
-                    <CreditCard className="h-5 w-5" />
+                    <Landmark className="h-5 w-5" />
                     Rekening Tujuan Transfer
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
                 <p className="text-sm text-blue-700">
-                    Silakan transfer <strong>{formatRupiah(biaya)}</strong> ke salah satu rekening berikut,
-                    lalu upload bukti di bawah.
+                    Silakan transfer <strong>{formatRupiah(biaya)}</strong> ke salah satu rekening berikut, kemudian upload bukti pembayaran.
                 </p>
+
                 <div className="space-y-2">
                     {rekening.map((r) => (
                         <div key={r.id} className="flex items-center gap-3 rounded-lg border border-blue-200 bg-white p-3">
+                            {/* Logo atau ikon */}
                             {r.logo ? (
-                                <img src={`/storage/${r.logo}`} alt={r.nama_bank}
-                                    className="h-10 w-10 rounded-md object-contain border bg-white p-0.5 shrink-0" />
+                                <img
+                                    src={`/storage/${r.logo}`}
+                                    alt={r.nama_bank}
+                                    className="h-10 w-10 rounded-md object-contain border bg-white p-0.5 shrink-0"
+                                />
                             ) : (
                                 <div className="h-10 w-10 rounded-md bg-blue-100 flex items-center justify-center shrink-0">
                                     <CreditCard className="h-5 w-5 text-blue-600" />
                                 </div>
                             )}
+
+                            {/* Info rekening */}
                             <div className="flex-1 min-w-0">
-                                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{r.nama_bank}</p>
+                                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                    {r.nama_bank}
+                                </p>
                                 <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                                     <span className="font-mono font-bold text-sm">{r.nomor_rekening}</span>
                                     <CopyButton text={r.nomor_rekening} />
@@ -120,7 +136,7 @@ function DeskripsiRenderer({ text }) {
     );
 }
 
-// Card setelah lunas — menampilkan info kelas + deskripsi_setelah_lunas
+// Card setelah lunas
 function InfoKelasLunas({ pendaftaran }) {
     return (
         <Card className="border-green-300 bg-green-50/50">
@@ -135,7 +151,6 @@ function InfoKelasLunas({ pendaftaran }) {
                     Pembayaran Anda telah dikonfirmasi. Berikut informasi untuk mengikuti kelas:
                 </p>
 
-                {/* Info dasar kelas */}
                 <div className="rounded-lg border border-green-200 bg-white p-4 space-y-2.5">
                     {pendaftaran.kelas_pengajar && (
                         <div className="flex items-center gap-2 text-sm">
@@ -156,7 +171,6 @@ function InfoKelasLunas({ pendaftaran }) {
                         </div>
                     )}
 
-                    {/* Deskripsi setelah lunas — ini yang baru */}
                     {pendaftaran.kelas_deskripsi_setelah_lunas && (
                         <>
                             <Separator className="my-1" />
@@ -172,7 +186,6 @@ function InfoKelasLunas({ pendaftaran }) {
                         </>
                     )}
 
-                    {/* Fallback jika admin belum mengisi */}
                     {!pendaftaran.kelas_deskripsi_setelah_lunas &&
                      !pendaftaran.kelas_pengajar &&
                      !pendaftaran.kelas_lokasi && (
@@ -349,6 +362,7 @@ function RiwayatPembayaran({ pembayaran }) {
 }
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────
+// Props baru: rekeningList (dari controller)
 export default function UserPendaftaranShow({ pendaftaran, pembayaran, rekeningList = [] }) {
     const { flash } = usePage().props;
 
@@ -381,7 +395,7 @@ export default function UserPendaftaranShow({ pendaftaran, pembayaran, rekeningL
                     <span className="text-foreground font-medium truncate">{pendaftaran.nama_kelas}</span>
                 </div>
 
-                {/* Card lunas + deskripsi_setelah_lunas */}
+                {/* Card lunas */}
                 {isLunas && <InfoKelasLunas pendaftaran={pendaftaran} />}
 
                 {/* Info Pendaftaran */}
@@ -433,7 +447,7 @@ export default function UserPendaftaranShow({ pendaftaran, pembayaran, rekeningL
                     </CardContent>
                 </Card>
 
-                {/* Rekening tujuan transfer */}
+                {/* Rekening tujuan transfer — tampil hanya jika perlu bayar */}
                 {perluUpload && rekeningList.length > 0 && (
                     <InfoRekening rekening={rekeningList} biaya={pendaftaran.kelas_biaya} />
                 )}

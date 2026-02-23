@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Kelas;
 use App\Models\PendaftaranKelas;
 use App\Models\PembayaranKelas;
+use App\Models\RekeningAktif;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -161,11 +162,13 @@ class UserKelasController extends Controller
             abort(403, 'Akses tidak diizinkan.');
         }
 
-        $pembayaran = PembayaranKelas::findByPendaftaran($id);
+        $pembayaran   = PembayaranKelas::findByPendaftaran($id);
+        $rekeningList = RekeningAktif::all(aktifSaja: true);   // ← tambah ini
 
         return Inertia::render('User/Pendaftaran/Show', [
-            'pendaftaran' => $pendaftaran,
-            'pembayaran'  => $pembayaran,
+            'pendaftaran'  => $pendaftaran,
+            'pembayaran'   => $pembayaran,
+            'rekeningList' => $rekeningList,                   // ← tambah ini
         ]);
     }
 

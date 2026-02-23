@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('rekening_aktif', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama_bank');          // e.g. "Bank BCA"
+            $table->string('nomor_rekening');
+            $table->string('nama_pemilik');
+            $table->string('logo')->nullable();   // path logo bank (opsional)
+            $table->boolean('is_aktif')->default(true);
+            $table->integer('urutan')->default(0); // untuk sorting tampilan
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('rekening_aktif');
+    }
+};

@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import {
     LayoutDashboard, Users, Shield, LogOut, ChevronUp, Settings,
-    ClipboardList, BookOpen, Book, CreditCard
+    ClipboardList, BookOpen, Book, CreditCard, Landmark 
 } from 'lucide-react';
 
 function AppSidebar() {
@@ -75,6 +75,12 @@ function AppSidebar() {
                     url: route('admin.pembayaran-kelas.index'),
                     icon: CreditCard,
                     active: route().current('admin.pembayaran-kelas.*'),
+                },
+                {
+                    title: 'Rekening Aktif',          // ← baru
+                    url: route('admin.rekening.index'),
+                    icon: Landmark,
+                    active: route().current('admin.rekening.*'),
                 },
                 { title: 'User Management', url: route('admin.users.index'), icon: Users, active: route().current('admin.users.*') },
                 { title: 'Roles & Permissions', url: route('admin.roles.index'), icon: Shield, active: route().current('admin.roles.*') },

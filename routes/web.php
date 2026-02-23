@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\KelasController;
 use App\Http\Controllers\Admin\PendaftaranKelasController;
 use App\Http\Controllers\Admin\PembayaranKelasController;
+use App\Http\Controllers\Admin\RekeningAktifController;
 use App\Http\Controllers\User\UserKelasController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -44,15 +45,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('pendaftaran-kelas', PendaftaranKelasController::class);
 
         // ── PEMBAYARAN KELAS ──────────────────────────────────────────────────────
-        Route::get('pembayaran-kelas',              [PembayaranKelasController::class, 'index'])    ->name('pembayaran-kelas.index');
-        Route::post('pembayaran-kelas',             [PembayaranKelasController::class, 'store'])    ->name('pembayaran-kelas.store');
-        Route::get('pembayaran-kelas/{id}',         [PembayaranKelasController::class, 'show'])     ->name('pembayaran-kelas.show');
+        Route::get('pembayaran-kelas',              [PembayaranKelasController::class, 'index'])->name('pembayaran-kelas.index');
+        Route::post('pembayaran-kelas',             [PembayaranKelasController::class, 'store'])->name('pembayaran-kelas.store');
+        Route::get('pembayaran-kelas/{id}',         [PembayaranKelasController::class, 'show'])->name('pembayaran-kelas.show');
         Route::post('pembayaran-kelas/{id}/verifikasi', [PembayaranKelasController::class, 'verifikasi'])->name('pembayaran-kelas.verifikasi');
-        Route::delete('pembayaran-kelas/{id}',      [PembayaranKelasController::class, 'destroy'])  ->name('pembayaran-kelas.destroy');
+        Route::delete('pembayaran-kelas/{id}',      [PembayaranKelasController::class, 'destroy'])->name('pembayaran-kelas.destroy');
 
+        // ── REKENING ──────────────────────────────────────────────────────
+        Route::resource('rekening', RekeningAktifController::class)->except(['show']);
     });
-
-    
 });
 
 
