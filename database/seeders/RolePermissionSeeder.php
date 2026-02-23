@@ -41,15 +41,21 @@ class RolePermissionSeeder extends Seeder
             'create pendaftaran',
             'edit pendaftaran',
             'delete pendaftaran',
-            'view own pendaftaran',    // user hanya lihat milik sendiri
-            'create own pendaftaran',  // user daftar sendiri
+            'view own pendaftaran',
+            'create own pendaftaran',
 
             // Pembayaran Kelas
             'view pembayaran',
             'create pembayaran',
             'delete pembayaran',
-            'verifikasi pembayaran',   // admin verifikasi bukti
-            'upload bukti pembayaran', // user upload bukti
+            'verifikasi pembayaran',
+            'upload bukti pembayaran',
+
+            // Rekening Aktif ← baru
+            'view rekening',
+            'create rekening',
+            'edit rekening',
+            'delete rekening',
         ];
 
         foreach ($permissions as $permission) {
@@ -64,13 +70,14 @@ class RolePermissionSeeder extends Seeder
         // Admin: semua permission
         $adminRole->givePermissionTo(Permission::all());
 
-        // User: permission terbatas (aksi milik sendiri)
+        // User: permission terbatas
         $userRole->givePermissionTo([
             'view dashboard',
             'view kelas',
             'view own pendaftaran',
             'create own pendaftaran',
             'upload bukti pembayaran',
+            // TIDAK ada 'view rekening' — user tidak bisa akses CRUD rekening
         ]);
 
         // ─── Users ────────────────────────────────────────────────────────────

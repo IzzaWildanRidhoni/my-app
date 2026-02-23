@@ -12,13 +12,17 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import {
     LayoutDashboard, Users, Shield, LogOut, ChevronUp, Settings,
-    ClipboardList, BookOpen, Book, CreditCard, Landmark 
+    ClipboardList, BookOpen, Book, CreditCard, Landmark
 } from 'lucide-react';
 
 function AppSidebar() {
     const { auth } = usePage().props;
-    const user    = auth.user;
-    const isAdmin = user?.roles?.includes('admin');
+    const user        = auth.user;
+    const isAdmin     = user?.roles?.includes('admin');
+    const permissions = user?.permissions ?? [];
+
+    // Helper cek permission
+    const can = (permission) => permissions.includes(permission);
 
     const menuItems = [
         {
@@ -29,94 +33,99 @@ function AppSidebar() {
         },
     ];
 
-    // Menu untuk semua user yang login (role user)
+    // Menu Kelas — semua user login (guard per item)
     menuItems.push({
         title: 'Kelas',
         items: [
-            {
+            can('view kelas') && {
                 title: 'Jadwal Kelas',
                 url: route('user.kelas.index'),
                 icon: BookOpen,
                 active: route().current('user.kelas.*'),
             },
-            {
+            can('view own pendaftaran') && {
                 title: 'Pendaftaran Saya',
                 url: route('user.pendaftaran.index'),
                 icon: ClipboardList,
                 active: route().current('user.pendaftaran.*'),
             },
-        ],
+        ].filter(Boolean),
     });
 
+    // Menu Administration — hanya admin, tiap item di-guard permission
     if (isAdmin) {
-        menuItems.push({
-            title: 'Administration',
-            items: [
-                {
-                    title: 'Peserta',
-                    url: route('admin.peserta.index'),
-                    icon: ClipboardList,
-                    active: route().current('admin.peserta.*'),
-                },
-                {
-                    title: 'Kelas',
-                    url: route('admin.kelas.index'),
-                    icon: BookOpen,
-                    active: route().current('admin.kelas.*'),
-                },
-                {
-                    title: 'Pendaftaran Kelas',
-                    url: route('admin.pendaftaran-kelas.index'),
-                    icon: Book,
-                    active: route().current('admin.pendaftaran-kelas.*'),
-                },
-                {
-                    title: 'Pembayaran Kelas',
-                    url: route('admin.pembayaran-kelas.index'),
-                    icon: CreditCard,
-                    active: route().current('admin.pembayaran-kelas.*'),
-                },
-                {
-                    title: 'Rekening Aktif',          // ← baru
-                    url: route('admin.rekening.index'),
-                    icon: Landmark,
-                    active: route().current('admin.rekening.*'),
-                },
-                { title: 'User Management', url: route('admin.users.index'), icon: Users, active: route().current('admin.users.*') },
-                { title: 'Roles & Permissions', url: route('admin.roles.index'), icon: Shield, active: route().current('admin.roles.*') },
-            ],
-        });
+        const adminItems = [
+            can('view pendaftaran') && {
+                title: 'Peserta',
+                url: route('admin.peserta.index'),
+                icon: ClipboardList,
+                active: route().current('admin.peserta.*'),
+            },
+            can('view kelas') && {
+                title: 'Kelas',
+                url: route('admin.kelas.index'),
+                icon: BookOpen,
+                active: route().current('admin.kelas.*'),
+            },
+            can('view pendaftaran') && {
+                title: 'Pendaftaran Kelas',
+                url: route('admin.pendaftaran-kelas.index'),
+                icon: Book,
+                active: route().current('admin.pendaftaran-kelas.*'),
+            },
+            can('view pembayaran') && {
+                title: 'Pembayaran Kelas',
+                url: route('admin.pembayaran-kelas.index'),
+                icon: CreditCard,
+                active: route().current('admin.pembayaran-kelas.*'),
+            },
+            can('view rekening') && {
+                title: 'Rekening Aktif',
+                url: route('admin.rekening.index'),
+                icon: Landmark,
+                active: route().current('admin.rekening.*'),
+            },
+            can('manage users') && {
+                title: 'User Management',
+                url: route('admin.users.index'),
+                icon: Users,
+                active: route().current('admin.users.*'),
+            },
+            can('manage roles') && {
+                title: 'Roles & Permissions',
+                url: route('admin.roles.index'),
+                icon: Shield,
+                active: route().current('admin.roles.*'),
+            },
+        ].filter(Boolean);
+
+        if (adminItems.length > 0) {
+            menuItems.push({ title: 'Administration', items: adminItems });
+        }
     }
 
     return (
         <Sidebar>
             <SidebarHeader>
                 <div className="flex items-center gap-2 px-4 py-2">
-                {/* bg-emerald-600 untuk warna hijau khas islami */}
-                                <div 
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-white"
-                style={{ backgroundColor: "#0F4C2A" }}
-                >
-                                    {/* SVG Masjid (Ringan & Gratis) */}
-                                    <svg 
-                                        xmlns="http://www.w3.org/2000/svg" 
-                                        width="20" 
-                                        height="20" 
-                                        viewBox="0 0 24 24" 
-                                        fill="none" 
-                                        stroke="currentColor" 
-                                        strokeWidth="2" 
-                                        strokeLinecap="round" 
-                                        strokeLinejoin="round"
-                                    >
-                                        <path d="m3 22 1.3-4.4a3.3 3.3 0 0 1 6.4 0L12 22" />
-                                        <path d="m12 22 1.3-4.4a3.3 3.3 0 0 1 6.4 0L21 22" />
-                                        <path d="M12 2v3" />
-                                        <path d="M12 7a5 5 0 0 1 5 5v10H7V12a5 5 0 0 1 5-5z" />
-                                    </svg>
-                                </div>
-                <span className="font-semibold text-lg text-emerald-950">Lpq Admin</span>
-            </div>
+                    <div
+                        className="flex h-8 w-8 items-center justify-center rounded-lg text-white"
+                        style={{ backgroundColor: "#0F4C2A" }}
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20" height="20" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" strokeWidth="2"
+                            strokeLinecap="round" strokeLinejoin="round"
+                        >
+                            <path d="m3 22 1.3-4.4a3.3 3.3 0 0 1 6.4 0L12 22" />
+                            <path d="m12 22 1.3-4.4a3.3 3.3 0 0 1 6.4 0L21 22" />
+                            <path d="M12 2v3" />
+                            <path d="M12 7a5 5 0 0 1 5 5v10H7V12a5 5 0 0 1 5-5z" />
+                        </svg>
+                    </div>
+                    <span className="font-semibold text-lg text-emerald-950">Lpq Admin</span>
+                </div>
             </SidebarHeader>
 
             <SidebarContent>
